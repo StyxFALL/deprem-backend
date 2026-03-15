@@ -14,12 +14,17 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* HEADER */
 header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.07);padding:0 16px}
-.hdr-top{display:flex;align-items:center;gap:10px;padding:12px 0 5px}
+.hdr-top{display:flex;align-items:center;gap:10px;padding:12px 0 6px}
 .hdr-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 0 20px rgba(99,102,241,.4)}
 .hdr-title{font-size:16px;font-weight:800;letter-spacing:-.3px}
-.hdr-meta{display:flex;align-items:center;gap:8px;padding:5px 0 11px;font-size:11px;color:#475569}
-.cd-badge{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.2);color:#818cf8;padding:2px 7px;border-radius:6px;font-size:10px}
-.btn-refresh{margin-left:auto;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:8px;padding:5px 14px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+.live-badge{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;color:#22c55e}
+.pulse{width:6px;height:6px;border-radius:50%;background:#22c55e;position:relative;flex-shrink:0}
+.pulse::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid #22c55e;animation:ring 1.5s ease-out infinite;opacity:0}
+@keyframes ring{0%{transform:scale(.8);opacity:.8}100%{transform:scale(2);opacity:0}}
+.pulse.off{background:#f97316}.pulse.off::after{border-color:#f97316;animation:none}
+.hdr-meta{display:flex;align-items:center;gap:8px;padding:5px 0 10px;font-size:11px;color:#475569}
+.cd-badge{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.2);color:#818cf8;padding:2px 7px;border-radius:6px;font-size:10px;min-width:36px;text-align:center}
+.btn-refresh{margin-left:auto;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:8px;padding:5px 14px;color:#fff;font-size:11px;font-weight:700;cursor:pointer}
 .btn-refresh:disabled{opacity:.4;cursor:not-allowed}
 
 /* STAT STRIP */
@@ -31,17 +36,16 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
 .ss-val.red{background:linear-gradient(135deg,#f87171,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .ss-lbl{font-size:10px;color:#475569;margin-top:1px;font-weight:500}
 
-/* ANA SEKMELER (Kandilli / AFAD / Aktivite) */
+/* KAYNAK SEKMELERİ */
 .source-tabs{display:flex;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.07)}
-.src-tab{flex:1;padding:12px 8px;border:none;background:transparent;color:#475569;font-size:13px;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;text-align:center}
+.src-tab{flex:1;padding:12px 8px;border:none;background:transparent;color:#475569;font-size:13px;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
 .src-tab.on{color:#f1f5f9;border-bottom-color:#6366f1;background:rgba(99,102,241,.06)}
-.src-tab .src-badge{display:inline-flex;align-items:center;gap:5px}
-.src-tab .src-dot{width:7px;height:7px;border-radius:50%;background:#334155}
-.src-tab.on .src-dot{background:#22c55e;box-shadow:0 0 5px #22c55e}
-.src-tab.loading .src-dot{background:#f97316}
-.src-tab.error .src-dot{background:#ef4444}
+.src-dot{width:7px;height:7px;border-radius:50%;background:#334155;flex-shrink:0;transition:all .3s}
+.src-dot.ok{background:#22c55e;box-shadow:0 0 5px #22c55e}
+.src-dot.loading{background:#f97316}
+.src-dot.error{background:#ef4444}
 
-/* ALT SEKMELER (Liste / Harita / İstatistik) */
+/* ALT SEKMELER */
 .sub-tabs{display:flex;padding:0 16px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.07)}
 .sub-tab{padding:9px 12px;border:none;background:transparent;color:#475569;font-size:12px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .sub-tab.on{color:#f1f5f9;border-bottom-color:#6366f1}
@@ -52,9 +56,14 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
 .fb.on{background:linear-gradient(135deg,#6366f1,#8b5cf6);border-color:transparent;color:#fff}
 .fb:hover:not(.on){border-color:rgba(255,255,255,.2);color:#94a3b8}
 .cnt{margin-left:auto;font-size:11px;color:#334155}
-.region-filter{padding:8px 16px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px}
-.region-select{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e2e8f0;padding:6px 10px;font-size:12px;outline:none;font-family:inherit}
-.region-select option{background:#0d1117}
+
+/* BÖLGE FİLTRESİ */
+.region-filter{padding:10px 16px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06)}
+.region-lbl{font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:8px}
+.region-btns{display:flex;gap:6px;flex-wrap:wrap}
+.rb{padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:transparent;color:#64748b;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.rb.on{background:linear-gradient(135deg,#0ea5e9,#6366f1);border-color:transparent;color:#fff;box-shadow:0 0 10px rgba(14,165,233,.3)}
+.rb:hover:not(.on){border-color:rgba(255,255,255,.2);color:#94a3b8}
 
 /* HATA */
 .err{margin:10px 16px;padding:10px 14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;color:#f87171;font-size:12px;display:none;justify-content:space-between;align-items:center}
@@ -64,7 +73,7 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
 .loading{text-align:center;padding:60px 20px;color:#334155}
 .loading-icon{font-size:38px;margin-bottom:12px}
 
-/* KART LİSTESİ */
+/* KART */
 .list{padding:10px 16px 40px;display:flex;flex-direction:column;gap:7px}
 .card{border-radius:13px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
@@ -119,49 +128,38 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
 .timeline-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px;overflow-x:auto}
 
 .tc{display:none}.tc.on{display:block}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);backdrop-filter:blur(12px);border-radius:14px;padding:12px 20px;font-size:13px;font-weight:700;color:#f87171;z-index:1000;display:none;text-align:center;max-width:340px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);backdrop-filter:blur(12px);border-radius:14px;padding:12px 20px;font-size:13px;font-weight:700;color:#f87171;z-index:1000;display:none;text-align:center;max-width:340px;width:90%}
 </style>
 </head>
 <body>
 
 <header>
-      <div class="hdr-top">
+  <div class="hdr-top">
     <div class="hdr-logo">🌍</div>
-    <div>
-      <div class="hdr-title">Deprem Takip TR</div>
-    </div>
-    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-      <div style="display:flex;align-items:center;gap:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;color:#22c55e">
-        <div class="pulse" id="dot"></div>
-        <span id="ltxt">Yükleniyor</span>
-      </div>
+    <div><div class="hdr-title">Deprem Takip TR</div></div>
+    <div class="live-badge">
+      <div class="pulse" id="dot"></div>
+      <span id="ltxt">Yükleniyor</span>
     </div>
   </div>
   <div class="hdr-meta">
+    <span id="lf">Bağlanılıyor…</span>
     <span class="cd-badge" id="cd">--</span>
-    <span id="lf" style="font-size:11px;color:#475569"></span>
     <button class="btn-refresh" id="rbtn" onclick="refreshAll()">↻ Yenile</button>
   </div>
 </header>
 
 <div class="stat-strip">
-  <div class="ss-item"><div class="ss-val" id="st">—</div><div class="ss-lbl">Son 30 Gün</div></div>
+  <div class="ss-item"><div class="ss-val" id="st">—</div><div class="ss-lbl" id="stlbl">Toplam</div></div>
   <div class="ss-item"><div class="ss-val" id="sd">—</div><div class="ss-lbl">Bugün</div></div>
   <div class="ss-item"><div class="ss-val orange" id="sm">—</div><div class="ss-lbl">En Büyük</div></div>
   <div class="ss-item"><div class="ss-val red" id="s4">—</div><div class="ss-lbl">M≥4</div></div>
 </div>
 
-<!-- ANA SEKMELER -->
 <div class="source-tabs">
-  <button class="src-tab on" id="stab0" onclick="srcTab(0)">
-    <div class="src-badge"><div class="src-dot"></div>Kandilli</div>
-  </button>
-  <button class="src-tab" id="stab1" onclick="srcTab(1)">
-    <div class="src-badge"><div class="src-dot"></div>AFAD</div>
-  </button>
-  <button class="src-tab" id="stab2" onclick="srcTab(2)">
-    <div class="src-badge">⚡ Aktivite</div>
-  </button>
+  <button class="src-tab on" id="stab0" onclick="srcTab(0)"><div class="src-dot" id="sdot0"></div>Kandilli</button>
+  <button class="src-tab" id="stab1" onclick="srcTab(1)"><div class="src-dot" id="sdot1"></div>AFAD</button>
+  <button class="src-tab" id="stab2" onclick="srcTab(2)">⚡ Aktivite</button>
 </div>
 
 <!-- KANDİLLİ -->
@@ -182,35 +180,32 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
       <span class="cnt" id="kcnt"></span>
     </div>
     <div class="region-filter">
-      <span style="font-size:11px;color:#475569;white-space:nowrap">🗺️ Bölge:</span>
-      <select class="region-select" id="kregion" onchange="renderList('k')">
-        <option value="">Tümü Türkiye</option>
-        <option value="marmara">Marmara</option>
-        <option value="ege">Ege</option>
-        <option value="akdeniz">Akdeniz</option>
-        <option value="karadeniz">Karadeniz</option>
-        <option value="ic">İç Anadolu</option>
-        <option value="dogu">Doğu Anadolu</option>
-        <option value="guneydogu">Güneydoğu Anadolu</option>
-      </select>
+      <div class="region-lbl">🗺️ Bölge Filtresi</div>
+      <div class="region-btns" id="kregionbtns">
+        <button class="rb on" onclick="setRegion('k','',this)">Tüm Türkiye</button>
+        <button class="rb" onclick="setRegion('k','marmara',this)">Marmara</button>
+        <button class="rb" onclick="setRegion('k','ege',this)">Ege</button>
+        <button class="rb" onclick="setRegion('k','akdeniz',this)">Akdeniz</button>
+        <button class="rb" onclick="setRegion('k','karadeniz',this)">Karadeniz</button>
+        <button class="rb" onclick="setRegion('k','ic',this)">İç Anadolu</button>
+        <button class="rb" onclick="setRegion('k','dogu',this)">Doğu Anadolu</button>
+        <button class="rb" onclick="setRegion('k','guneydogu',this)">Güneydoğu Anadolu</button>
+      </div>
     </div>
-    <div id="klb" class="loading"><div class="loading-icon">📡</div><div>Kandilli yükleniyor…</div></div>
+    <div id="klb" class="loading"><div class="loading-icon">📡</div><div>Kandilli yükleniyor…</div><div style="font-size:11px;margin-top:6px;color:#1e293b">İlk açılışta ~30 saniye sürebilir</div></div>
     <div class="list" id="klist" style="display:none"></div>
   </div>
   <div id="ksub1" class="tc">
     <div class="mapbox" id="kmap"></div>
     <div class="map-legend">
       <div class="ml-item"><div class="ml-dot" style="background:#ef4444"></div>M≥5</div>
-      <div class="ml-item"><div class="ml-dot" style="background:#f97316"></div>M4–5</div>
-      <div class="ml-item"><div class="ml-dot" style="background:#eab308"></div>M3–4</div>
-      <div class="ml-item"><div class="ml-dot" style="background:#a855f7"></div>M2–3</div>
-      <div class="ml-item"><div class="ml-dot" style="background:#22c55e"></div>M&lt;2</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#f97316"></div>M 4–5</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#eab308"></div>M 3–4</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#a855f7"></div>M 2–3</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#22c55e"></div>M &lt; 2</div>
     </div>
   </div>
-  <div id="ksub2" class="tc">
-    <div class="sgrid" id="kstats"></div>
-    <div class="cbox" id="kchart"></div>
-  </div>
+  <div id="ksub2" class="tc"><div class="sgrid" id="kstats"></div><div class="cbox" id="kchart"></div></div>
 </div>
 
 <!-- AFAD -->
@@ -231,41 +226,38 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
       <span class="cnt" id="acnt"></span>
     </div>
     <div class="region-filter">
-      <span style="font-size:11px;color:#475569;white-space:nowrap">🗺️ Bölge:</span>
-      <select class="region-select" id="aregion" onchange="renderList('a')">
-        <option value="">Tümü Türkiye</option>
-        <option value="marmara">Marmara</option>
-        <option value="ege">Ege</option>
-        <option value="akdeniz">Akdeniz</option>
-        <option value="karadeniz">Karadeniz</option>
-        <option value="ic">İç Anadolu</option>
-        <option value="dogu">Doğu Anadolu</option>
-        <option value="guneydogu">Güneydoğu Anadolu</option>
-      </select>
+      <div class="region-lbl">🗺️ Bölge Filtresi</div>
+      <div class="region-btns" id="aregionbtns">
+        <button class="rb on" onclick="setRegion('a','',this)">Tüm Türkiye</button>
+        <button class="rb" onclick="setRegion('a','marmara',this)">Marmara</button>
+        <button class="rb" onclick="setRegion('a','ege',this)">Ege</button>
+        <button class="rb" onclick="setRegion('a','akdeniz',this)">Akdeniz</button>
+        <button class="rb" onclick="setRegion('a','karadeniz',this)">Karadeniz</button>
+        <button class="rb" onclick="setRegion('a','ic',this)">İç Anadolu</button>
+        <button class="rb" onclick="setRegion('a','dogu',this)">Doğu Anadolu</button>
+        <button class="rb" onclick="setRegion('a','guneydogu',this)">Güneydoğu Anadolu</button>
+      </div>
     </div>
-    <div id="alb" class="loading"><div class="loading-icon">📡</div><div>AFAD yükleniyor…</div></div>
+    <div id="alb" class="loading"><div class="loading-icon">📡</div><div>AFAD yükleniyor…</div><div style="font-size:11px;margin-top:6px;color:#1e293b">İlk açılışta ~30 saniye sürebilir</div></div>
     <div class="list" id="alist" style="display:none"></div>
   </div>
   <div id="asub1" class="tc">
     <div class="mapbox" id="amap"></div>
     <div class="map-legend">
       <div class="ml-item"><div class="ml-dot" style="background:#ef4444"></div>M≥5</div>
-      <div class="ml-item"><div class="ml-dot" style="background:#f97316"></div>M4–5</div>
-      <div class="ml-item"><div class="ml-dot" style="background:#eab308"></div>M3–4</div>
-      <div class="ml-item"><div class="ml-dot" style="background:#a855f7"></div>M2–3</div>
-      <div class="ml-item"><div class="ml-dot" style="background:#22c55e"></div>M&lt;2</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#f97316"></div>M 4–5</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#eab308"></div>M 3–4</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#a855f7"></div>M 2–3</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#22c55e"></div>M &lt; 2</div>
     </div>
   </div>
-  <div id="asub2" class="tc">
-    <div class="sgrid" id="astats"></div>
-    <div class="cbox" id="achart"></div>
-  </div>
+  <div id="asub2" class="tc"><div class="sgrid" id="astats"></div><div class="cbox" id="achart"></div></div>
 </div>
 
 <!-- AKTİVİTE -->
 <div id="src2" class="tc">
   <div class="act-section">
-    <div class="act-title">⚡ Anlık Aktivite Skoru (Kandilli + AFAD)</div>
+    <div class="act-title">⚡ Anlık Aktivite Skoru</div>
     <div class="risk-card">
       <div id="riskLabel" style="font-size:28px;font-weight:900;margin-bottom:6px">—</div>
       <div id="riskDesc" style="font-size:12px;color:#64748b;margin-bottom:16px">Hesaplanıyor…</div>
@@ -290,149 +282,177 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
 
 <script>
 const B = "https://deprem-backend-kvmk.onrender.com";
-const RM = 30000;
+const RM = 60000;
 
-// Veri depoları
-const D = { k: [], a: [] };
-const PS = { k: {}, a: {} };
-const NI = { k: new Set(), a: new Set() };
-const UI = { k: new Set(), a: new Set() };
-const OI = { k: null, a: null };
-const MM = { k: 0, a: 0 };
-const MAPS = { k: null, a: null };
+// ── STATE ────────────────────────────────────────────────────────────────────
+const D       = { k: [], a: [] };
+const PS      = { k: {}, a: {} };
+const NI      = { k: new Set(), a: new Set() };
+const UI      = { k: new Set(), a: new Set() };
+const OI      = { k: null, a: null };
+const MM      = { k: 0, a: 0 };
+const REGION  = { k: "", a: "" };
+const MAPS    = { k: null, a: null };
 const MARKERS = { k: [], a: [] };
 
-let cd = RM/1000, cdTimer, timer;
 let curSrc = 0;
-const ALERT_MAG = 4.0;
+let cd = RM / 1000;
+let timer, cdTimer;
+
+const ALERT_MAG  = 4.0;
+const NEW_WINDOW = 5 * 3600 * 1000;
 
 const REGIONS = {
-  marmara:   {minLat:40.0,maxLat:42.0,minLon:26.0,maxLon:31.5},
-  ege:       {minLat:36.5,maxLat:40.0,minLon:26.0,maxLon:30.0},
-  akdeniz:   {minLat:36.0,maxLat:38.5,minLon:28.5,maxLon:36.5},
-  karadeniz: {minLat:40.5,maxLat:42.0,minLon:31.5,maxLon:40.0},
-  ic:        {minLat:38.0,maxLat:40.5,minLon:30.0,maxLon:36.0},
-  dogu:      {minLat:38.0,maxLat:40.5,minLon:36.0,maxLon:44.0},
-  guneydogu: {minLat:36.5,maxLat:38.5,minLon:36.5,maxLon:44.0},
+  marmara:   { minLat:40.0, maxLat:42.0, minLon:26.0, maxLon:31.5 },
+  ege:       { minLat:36.5, maxLat:40.0, minLon:26.0, maxLon:30.0 },
+  akdeniz:   { minLat:36.0, maxLat:38.5, minLon:28.5, maxLon:36.5 },
+  karadeniz: { minLat:40.5, maxLat:42.0, minLon:31.5, maxLon:40.0 },
+  ic:        { minLat:38.0, maxLat:40.5, minLon:30.0, maxLon:36.0 },
+  dogu:      { minLat:38.0, maxLat:40.5, minLon:36.0, maxLon:44.0 },
+  guneydogu: { minLat:36.5, maxLat:38.5, minLon:36.5, maxLon:44.0 },
 };
 
+// ── YARDIMCI ─────────────────────────────────────────────────────────────────
 const MC = m =>
-  m>=5?{cls:"m5",tx:"#f87171",dot:"#ef4444",rc:"#ef4444",rp:Math.min(99,m/8*100)+"%"}:
-  m>=4?{cls:"m4",tx:"#fb923c",dot:"#f97316",rc:"#f97316",rp:Math.min(99,m/8*100)+"%"}:
-  m>=3?{cls:"m3",tx:"#fde047",dot:"#eab308",rc:"#eab308",rp:Math.min(99,m/8*100)+"%"}:
-  m>=2?{cls:"m2",tx:"#d8b4fe",dot:"#a855f7",rc:"#a855f7",rp:Math.min(99,m/8*100)+"%"}:
-       {cls:"m1",tx:"#86efac",dot:"#22c55e",rc:"#22c55e",rp:Math.min(99,m/8*100)+"%"};
+  m >= 5 ? { cls:"m5", tx:"#f87171", dot:"#ef4444", rc:"#ef4444", rp:Math.min(99,m/8*100)+"%" } :
+  m >= 4 ? { cls:"m4", tx:"#fb923c", dot:"#f97316", rc:"#f97316", rp:Math.min(99,m/8*100)+"%" } :
+  m >= 3 ? { cls:"m3", tx:"#fde047", dot:"#eab308", rc:"#eab308", rp:Math.min(99,m/8*100)+"%" } :
+  m >= 2 ? { cls:"m2", tx:"#d8b4fe", dot:"#a855f7", rc:"#a855f7", rp:Math.min(99,m/8*100)+"%" } :
+           { cls:"m1", tx:"#86efac", dot:"#22c55e", rc:"#22c55e", rp:Math.min(99,m/8*100)+"%" };
 
-const fd = t => new Date(t).toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+const fd = t => new Date(t).toLocaleString("tr-TR", {
+  day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit"
+});
 const ag = t => {
-  const s=Math.floor((Date.now()-new Date(t))/1000);
-  return s<60?s+"sn":s<3600?Math.floor(s/60)+"dk":s<86400?Math.floor(s/3600)+"sa":Math.floor(s/86400)+"g";
+  const s = Math.floor((Date.now() - new Date(t)) / 1000);
+  return s < 60 ? s+"sn" : s < 3600 ? Math.floor(s/60)+"dk" : s < 86400 ? Math.floor(s/3600)+"sa" : Math.floor(s/86400)+"g";
 };
-
-function inRegion(q, key) {
+const inR = (q, key) => {
   if (!key) return true;
   const r = REGIONS[key];
-  return q.lat>=r.minLat && q.lat<=r.maxLat && q.lon>=r.minLon && q.lon<=r.maxLon;
+  return q.lat >= r.minLat && q.lat <= r.maxLat && q.lon >= r.minLon && q.lon <= r.maxLon;
+};
+
+function setLive(on) {
+  document.getElementById("dot").className = on ? "pulse" : "pulse off";
+  document.getElementById("ltxt").textContent = on ? "Canlı" : "Güncelleniyor";
 }
 
-function beep(f=440,d=.3,v=.3){try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;g.gain.value=v;o.start();g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.stop(c.currentTime+d);}catch(e){}}
+function beep(f,d,v){try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;g.gain.value=v;o.start();g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.stop(c.currentTime+d);}catch(e){}}
 function alertSound(){beep(880,.15,.4);setTimeout(()=>beep(660,.15,.4),180);setTimeout(()=>beep(440,.3,.4),360);}
 function showToast(msg){const t=document.getElementById("toast");t.innerHTML=msg;t.style.display="block";setTimeout(()=>t.style.display="none",6000);}
+function setDot(src, state){document.getElementById(src==="k"?"sdot0":"sdot1").className="src-dot "+state;}
 
-// ── VERİ ÇEKME ──────────────────────────────────────────────────────────────
-function sl(loading) {
-  const d = document.getElementById("dot");
-  const t = document.getElementById("ltxt");
-  if (!d || !t) return;
-  if (loading) { d.className="pulse off"; t.textContent="Güncelleniyor"; }
-  else { d.className="pulse"; t.textContent="Canlı"; }
-}
-
+// ── VERİ ÇEKME ───────────────────────────────────────────────────────────────
 async function loadKandilli() {
-  sl(true);
-  setTabState("k","loading");
+  setLive(false);
+  setDot("k", "loading");
+  document.getElementById("kerr").style.display = "none";
   try {
-    const r = await fetch(B+"/kandilli");
-    if (!r.ok) throw new Error("HTTP "+r.status);
+    const r = await fetch(B + "/kandilli");
+    if (!r.ok) throw new Error("HTTP " + r.status);
     const j = await r.json();
-    processData("k", j.quakes||[]);
-    setTabState("k","ok");
-    sl(false);
+    processData("k", j.quakes || []);
+    setDot("k", "ok");
   } catch(e) {
-    document.getElementById("kerrmsg").textContent = "⚠️ Kandilli: "+e.message;
+    document.getElementById("kerrmsg").textContent = "⚠️ " + e.message;
     document.getElementById("kerr").style.display = "flex";
-    setTabState("k","error");
+    setDot("k", "error");
   }
+  setLive(true);
+  document.getElementById("lf").textContent = "Son: " + fd(new Date());
 }
 
 async function loadAfad() {
-  setTabState("a","loading");
+  setDot("a", "loading");
+  document.getElementById("aerr").style.display = "none";
   try {
-    const r = await fetch(B+"/afad");
-    if (!r.ok) throw new Error("HTTP "+r.status);
+    const r = await fetch(B + "/afad");
+    if (!r.ok) throw new Error("HTTP " + r.status);
     const j = await r.json();
     if (j.error) throw new Error(j.error);
-    processData("a", j.quakes||[]);
-    setTabState("a","ok");
+    if (!j.quakes || j.quakes.length === 0) throw new Error("Veri boş geldi");
+    processData("a", j.quakes);
+    setDot("a", "ok");
   } catch(e) {
-    document.getElementById("aerrmsg").textContent = "⚠️ AFAD: "+e.message;
+    document.getElementById("aerrmsg").textContent = "⚠️ " + e.message;
     document.getElementById("aerr").style.display = "flex";
-    setTabState("a","error");
+    setDot("a", "error");
   }
 }
 
 function processData(src, quakes) {
   const isFirst = Object.keys(PS[src]).length === 0;
   const nx = {};
-  NI[src] = new Set(); UI[src] = new Set();
+  NI[src] = new Set();
+  UI[src] = new Set();
   let bigNew = null;
+
   for (const q of quakes) {
-    const fp = `${q.mag}|${q.depth}|${q.place}`;
+    const fp = q.mag + "|" + q.depth + "|" + q.place;
     nx[q.id] = fp;
-    const p = PS[src][q.id];
-    if (p === undefined) {
+    const prev = PS[src][q.id];
+    if (prev === undefined) {
       NI[src].add(q.id);
-      if (!isFirst && q.mag >= ALERT_MAG && (Date.now()-new Date(q.time)) < 5*60*1000) bigNew = q;
-    } else if (p !== fp) UI[src].add(q.id);
+      if (!isFirst && q.mag >= ALERT_MAG && (Date.now() - new Date(q.time)) < 5 * 60 * 1000) {
+        bigNew = q;
+      }
+    } else if (prev !== fp) {
+      UI[src].add(q.id);
+    }
   }
+
   PS[src] = nx;
-  D[src] = quakes;
+  D[src]  = quakes;
 
   renderList(src);
   renderStats(src);
   if (MAPS[src]) renderMapMarkers(src);
-  if (bigNew) { alertSound(); showToast(`🚨 M${bigNew.mag.toFixed(1)} — ${bigNew.place}`); }
-  setTimeout(() => { NI[src]=new Set(); UI[src]=new Set(); renderList(src); }, 10000);
-
-  updateTopStats();
   renderActivity();
+
+  if (curSrc === 0 && src === "k") updateTopStats("k");
+  if (curSrc === 1 && src === "a") updateTopStats("a");
+
+  if (bigNew) {
+    alertSound();
+    showToast("🚨 M" + bigNew.mag.toFixed(1) + " — " + bigNew.place);
+  }
+
+  setTimeout(() => { NI[src] = new Set(); UI[src] = new Set(); renderList(src); }, 10000);
 }
 
-function setTabState(src, state) {
-  const idx = src==="k"?0:1;
-  const el = document.getElementById("stab"+idx);
-  el.className = "src-tab" + (curSrc===idx?" on":"") + " "+state;
+// ── STAT BAR ─────────────────────────────────────────────────────────────────
+function updateTopStats(src) {
+  const Q = D[src];
+  if (!Q.length) return;
+  const td = new Date().toISOString().slice(0, 10);
+  document.getElementById("st").textContent = Q.length;
+  document.getElementById("sd").textContent = Q.filter(q => q.time.startsWith(td)).length;
+  document.getElementById("sm").textContent = "M" + Math.max(...Q.map(q => q.mag)).toFixed(1);
+  document.getElementById("s4").textContent = Q.filter(q => q.mag >= 4).length;
+  document.getElementById("stlbl").textContent = src === "k" ? "Kandilli" : "AFAD";
 }
 
-// ── RENDER LİSTE ─────────────────────────────────────────────────────────────
+// ── LİSTE ────────────────────────────────────────────────────────────────────
 function renderList(src) {
-  const id = src==="k"?"k":"a";
-  const region = document.getElementById(id+"region").value;
-  const f = D[src].filter(q => q.mag >= MM[src] && inRegion(q, region));
-  document.getElementById(id+"cnt").textContent = f.length+" kayıt";
-  const lb = document.getElementById(id+"lb");
-  const ls = document.getElementById(id+"list");
-  if (!D[src].length) { lb.style.display="block"; ls.style.display="none"; return; }
-  lb.style.display="none"; ls.style.display="flex";
+  const pfx = src === "k" ? "k" : "a";
+  const f = D[src].filter(q => q.mag >= MM[src] && inR(q, REGION[src]));
+  document.getElementById(pfx + "cnt").textContent = f.length + " kayıt";
+  const lb = document.getElementById(pfx + "lb");
+  const ls = document.getElementById(pfx + "list");
+  if (!D[src].length) { lb.style.display = "block"; ls.style.display = "none"; return; }
+  lb.style.display = "none";
+  ls.style.display = "flex";
   const now = Date.now();
   ls.innerHTML = f.map(q => {
-    const c = MC(q.mag);
-    const isNew = NI[src].has(q.id) && (now-new Date(q.time)) < 5*3600*1000;
-    const isUpd = UI[src].has(q.id);
-    const isOpen = OI[src] === q.id;
-    return `<div class="card ${c.cls} ${isNew?"new-q":isUpd?"upd-q":""}" onclick="toggleCard('${src}','${q.id}')">
-      ${isNew?'<span class="tag tnew">YENİ</span>':""}
-      ${isUpd?'<span class="tag tupd">GÜNCELLENDİ</span>':""}
+    const c   = MC(q.mag);
+    const isN = NI[src].has(q.id) && (now - new Date(q.time)) < NEW_WINDOW;
+    const isU = UI[src].has(q.id);
+    const isO = OI[src] === q.id;
+    const safeId = q.id.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+    return `<div class="card ${c.cls}${isN?" new-q":isU?" upd-q":""}" onclick="toggleCard('${src}','${safeId}')">
+      ${isN ? '<span class="tag tnew">YENİ</span>' : ""}
+      ${isU ? '<span class="tag tupd">GÜNCELLENDİ</span>' : ""}
       <div class="ci">
         <div class="mag-ring" style="--rc:${c.rc};--rp:${c.rp}">
           <span class="mag-num" style="color:${c.tx}">M${q.mag.toFixed(1)}</span>
@@ -444,40 +464,55 @@ function renderList(src) {
         </div>
         <div class="cdot" style="background:${c.dot}"></div>
       </div>
-      ${isOpen?`<div class="cdetail">
+      ${isO ? `<div class="cdetail">
         <span>🕳️ Derinlik <b>${q.depth} km</b></span>
         <span>📏 Tür <b>${q.magType}</b></span>
         <span>🌐 Enlem <b>${q.lat}</b></span>
         <span>🌐 Boylam <b>${q.lon}</b></span>
-      </div>`:""}
+      </div>` : ""}
     </div>`;
   }).join("");
 }
 
-function toggleCard(src, id) { OI[src] = OI[src]===id?null:id; renderList(src); }
+function toggleCard(src, id) { OI[src] = OI[src] === id ? null : id; renderList(src); }
+
 function setMag(src, v, btn) {
   MM[src] = v;
-  const pfx = src==="k"?"k":"a";
-  btn.closest(".filter-bar").querySelectorAll(".fb").forEach(b=>b.classList.remove("on"));
+  btn.closest(".filter-bar").querySelectorAll(".fb").forEach(b => b.classList.remove("on"));
+  btn.classList.add("on");
+  renderList(src);
+}
+
+function setRegion(src, val, btn) {
+  REGION[src] = val;
+  const pfx = src === "k" ? "k" : "a";
+  document.getElementById(pfx + "regionbtns").querySelectorAll(".rb").forEach(b => b.classList.remove("on"));
   btn.classList.add("on");
   renderList(src);
 }
 
 // ── HARİTA ───────────────────────────────────────────────────────────────────
 function initMap(src) {
-  const id = src==="k"?"kmap":"amap";
-  if (MAPS[src]) return;
-  MAPS[src] = L.map(id, {center:[39,35],zoom:6});
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OSM",maxZoom:18}).addTo(MAPS[src]);
+  const id = src === "k" ? "kmap" : "amap";
+  if (MAPS[src]) { setTimeout(() => MAPS[src].invalidateSize(), 100); return; }
+  MAPS[src] = L.map(id, { center:[39, 35], zoom:6 });
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution:"© OSM", maxZoom:18 }).addTo(MAPS[src]);
   renderMapMarkers(src);
 }
+
 function renderMapMarkers(src) {
   if (!MAPS[src] || !D[src].length) return;
-  MARKERS[src].forEach(m=>m.remove()); MARKERS[src]=[];
+  MARKERS[src].forEach(m => m.remove());
+  MARKERS[src] = [];
   D[src].forEach(q => {
-    const c=MC(q.mag), r=Math.max(5,Math.min(22,q.mag*3.5));
-    const icon=L.divIcon({className:"",html:`<div style="width:${r*2}px;height:${r*2}px;border-radius:50%;background:${c.dot};opacity:.85;border:2px solid rgba(255,255,255,.5);box-shadow:0 0 ${r}px ${c.dot}88"></div>`,iconSize:[r*2,r*2],iconAnchor:[r,r]});
-    const mk=L.marker([q.lat,q.lon],{icon}).addTo(MAPS[src]);
+    const c = MC(q.mag);
+    const r = Math.max(5, Math.min(22, q.mag * 3.5));
+    const icon = L.divIcon({
+      className: "",
+      html: `<div style="width:${r*2}px;height:${r*2}px;border-radius:50%;background:${c.dot};opacity:.85;border:2px solid rgba(255,255,255,.5);box-shadow:0 0 ${r}px ${c.dot}88"></div>`,
+      iconSize: [r*2, r*2], iconAnchor: [r, r]
+    });
+    const mk = L.marker([q.lat, q.lon], { icon }).addTo(MAPS[src]);
     mk.bindPopup(`<b>M${q.mag.toFixed(1)}</b><br/>${q.place}<br/><small>${fd(q.time)}</small>`);
     MARKERS[src].push(mk);
   });
@@ -485,115 +520,115 @@ function renderMapMarkers(src) {
 
 // ── İSTATİSTİK ───────────────────────────────────────────────────────────────
 function renderStats(src) {
-  const id = src==="k"?"k":"a";
+  const pfx = src === "k" ? "k" : "a";
   const Q = D[src];
   if (!Q.length) return;
-  const tot=Q.length, td=new Date().toISOString().slice(0,10);
-  document.getElementById(id+"stats").innerHTML=[
-    {i:"📊",v:tot,l:"Son 30 Gün"},
-    {i:"📅",v:Q.filter(q=>q.time.startsWith(td)).length,l:"Bugün"},
-    {i:"💥",v:"M"+Math.max(...Q.map(q=>q.mag)).toFixed(1),l:"En Büyük"},
-    {i:"📈",v:"M"+(Q.reduce((s,q)=>s+q.mag,0)/tot).toFixed(1),l:"Ortalama"},
-    {i:"🔵",v:Q.filter(q=>q.mag>=3).length,l:"M≥3"},
-    {i:"⚠️",v:Q.filter(q=>q.mag>=4).length,l:"M≥4"},
-  ].map(s=>`<div class="sc"><div class="sc-icon">${s.i}</div><div class="sc-val">${s.v}</div><div class="sc-lbl">${s.l}</div></div>`).join("");
-  const bs=[
-    {l:"M 5+",c:Q.filter(q=>q.mag>=5).length,col:"#ef4444"},
-    {l:"M 4–5",c:Q.filter(q=>q.mag>=4&&q.mag<5).length,col:"#f97316"},
-    {l:"M 3–4",c:Q.filter(q=>q.mag>=3&&q.mag<4).length,col:"#eab308"},
-    {l:"M 2–3",c:Q.filter(q=>q.mag>=2&&q.mag<3).length,col:"#a855f7"},
-    {l:"M 1–2",c:Q.filter(q=>q.mag>=1&&q.mag<2).length,col:"#22c55e"},
-    {l:"M < 1",c:Q.filter(q=>q.mag<1).length,col:"#64748b"},
-  ];
-  document.getElementById(id+"chart").innerHTML=`<div class="ctitle">Büyüklük Dağılımı</div>`+
-    bs.map(b=>{const p=Math.round(b.c/tot*100);return`<div class="brow"><div class="bmeta"><span>${b.l}</span><span>${b.c} (%${p})</span></div><div class="btrack"><div class="bfill" style="width:${p}%;background:${b.col}"></div></div></div>`;}).join("");
-}
+  const tot = Q.length;
+  const td  = new Date().toISOString().slice(0, 10);
+  document.getElementById(pfx + "stats").innerHTML = [
+    { i:"📊", v:tot,                                              l:"Toplam" },
+    { i:"📅", v:Q.filter(q=>q.time.startsWith(td)).length,        l:"Bugün" },
+    { i:"💥", v:"M"+Math.max(...Q.map(q=>q.mag)).toFixed(1),      l:"En Büyük" },
+    { i:"📈", v:"M"+(Q.reduce((s,q)=>s+q.mag,0)/tot).toFixed(1), l:"Ortalama" },
+    { i:"🔵", v:Q.filter(q=>q.mag>=3).length,                     l:"M≥3" },
+    { i:"⚠️", v:Q.filter(q=>q.mag>=4).length,                     l:"M≥4" },
+  ].map(s => `<div class="sc"><div class="sc-icon">${s.i}</div><div class="sc-val">${s.v}</div><div class="sc-lbl">${s.l}</div></div>`).join("");
 
-// ── ÜST İSTATİSTİK ───────────────────────────────────────────────────────────
-function updateTopStats() {
-  // Aktif sekmeye göre göster: 0=Kandilli, 1=AFAD, 2=Aktivite(Kandilli)
-  const src = curSrc === 1 ? "a" : "k";
-  const Q = D[src];
-  if (!Q.length) return;
-  const td = new Date().toISOString().slice(0,10);
-  document.getElementById("st").textContent = Q.length;
-  document.getElementById("sd").textContent = Q.filter(q=>q.time.startsWith(td)).length;
-  document.getElementById("sm").textContent = "M"+Math.max(...Q.map(q=>q.mag)).toFixed(1);
-  document.getElementById("s4").textContent = Q.filter(q=>q.mag>=4).length;
+  const bs = [
+    { l:"M 5+",  c:Q.filter(q=>q.mag>=5).length,              col:"#ef4444" },
+    { l:"M 4–5", c:Q.filter(q=>q.mag>=4&&q.mag<5).length,     col:"#f97316" },
+    { l:"M 3–4", c:Q.filter(q=>q.mag>=3&&q.mag<4).length,     col:"#eab308" },
+    { l:"M 2–3", c:Q.filter(q=>q.mag>=2&&q.mag<3).length,     col:"#a855f7" },
+    { l:"M 1–2", c:Q.filter(q=>q.mag>=1&&q.mag<2).length,     col:"#22c55e" },
+    { l:"M < 1", c:Q.filter(q=>q.mag<1).length,               col:"#64748b" },
+  ];
+  document.getElementById(pfx + "chart").innerHTML =
+    `<div class="ctitle">Büyüklük Dağılımı</div>` +
+    bs.map(b => {
+      const pct = Math.round(b.c / tot * 100);
+      return `<div class="brow"><div class="bmeta"><span>${b.l}</span><span>${b.c} (%${pct})</span></div><div class="btrack"><div class="bfill" style="width:${pct}%;background:${b.col}"></div></div></div>`;
+    }).join("");
 }
 
 // ── AKTİVİTE ─────────────────────────────────────────────────────────────────
 function renderActivity() {
   const Q = D.k.length ? D.k : D.a;
   if (!Q.length) return;
-  const now = Date.now();
-  const cutoff24 = now - 24*3600*1000;
-  const last24 = Q.filter(q=>new Date(q.time)>=cutoff24);
-  const last1h  = Q.filter(q=>(now-new Date(q.time))<3600*1000);
-  const last6h  = Q.filter(q=>(now-new Date(q.time))<6*3600*1000);
+  const now     = Date.now();
+  const c24     = now - 24 * 3600 * 1000;
+  const last24  = Q.filter(q => new Date(q.time) >= c24);
+  const last1h  = Q.filter(q => (now - new Date(q.time)) < 3600 * 1000);
+  const last6h  = Q.filter(q => (now - new Date(q.time)) < 6 * 3600 * 1000);
 
   let score = 0;
-  score += Math.min(40, last1h.length*4);
-  score += Math.min(30, last1h.filter(q=>q.mag>=3).length*10);
-  score += Math.min(20, last6h.filter(q=>q.mag>=4).length*10);
-  score += last24.filter(q=>q.mag>=5).length>=1?10:0;
+  score += Math.min(40, last1h.length * 4);
+  score += Math.min(30, last1h.filter(q => q.mag >= 3).length * 10);
+  score += Math.min(20, last6h.filter(q => q.mag >= 4).length * 10);
+  score += last24.filter(q => q.mag >= 5).length >= 1 ? 10 : 0;
   score = Math.min(100, score);
 
   let txt, col, desc;
-  if(score<20){txt="🟢 Düşük";col="linear-gradient(90deg,#22c55e,#16a34a)";desc="Deprem aktivitesi normalin altında.";}
-  else if(score<45){txt="🟡 Normal";col="linear-gradient(90deg,#eab308,#ca8a04)";desc="Deprem aktivitesi normal seviyelerde.";}
-  else if(score<70){txt="🟠 Yüksek";col="linear-gradient(90deg,#f97316,#ea580c)";desc="Son saatlerde belirgin deprem aktivitesi var.";}
-  else{txt="🔴 Çok Yüksek";col="linear-gradient(90deg,#ef4444,#dc2626)";desc="Dikkat! Yoğun deprem aktivitesi.";}
+  if      (score < 20) { txt="🟢 Düşük";      col="linear-gradient(90deg,#22c55e,#16a34a)"; desc="Deprem aktivitesi normalin altında."; }
+  else if (score < 45) { txt="🟡 Normal";      col="linear-gradient(90deg,#eab308,#ca8a04)"; desc="Deprem aktivitesi normal seviyelerde."; }
+  else if (score < 70) { txt="🟠 Yüksek";      col="linear-gradient(90deg,#f97316,#ea580c)"; desc="Son saatlerde belirgin deprem aktivitesi var."; }
+  else                 { txt="🔴 Çok Yüksek";  col="linear-gradient(90deg,#ef4444,#dc2626)"; desc="Dikkat! Yoğun deprem aktivitesi."; }
 
   document.getElementById("riskLabel").textContent = txt;
-  document.getElementById("riskDesc").textContent = desc;
-  document.getElementById("riskBar").style.cssText = `height:100%;border-radius:20px;transition:width .8s ease;width:${score}%;background:${col}`;
-  document.getElementById("riskMini").innerHTML=[
-    {i:"⚡",v:last1h.length,l:"Son 1 Saat"},
-    {i:"🕕",v:last6h.length,l:"Son 6 Saat"},
-    {i:"📅",v:last24.length,l:"Son 24 Saat"},
-  ].map(s=>`<div class="risk-mini"><div style="font-size:18px">${s.i}</div><div style="font-size:20px;font-weight:800;color:#f1f5f9">${s.v}</div><div style="font-size:10px;color:#475569">${s.l}</div></div>`).join("");
+  document.getElementById("riskDesc").textContent  = desc;
+  document.getElementById("riskBar").style.cssText =
+    `height:100%;border-radius:20px;transition:width .8s ease;width:${score}%;background:${col}`;
 
-  const hours=Array(24).fill(0);
-  last24.forEach(q=>{hours[new Date(q.time).getHours()]++;});
-  const maxH=Math.max(...hours,1);
-  const nowH=new Date().getHours();
-  document.getElementById("timeline").innerHTML=hours.map((c,i)=>{
-    const pct=Math.round(c/maxH*100);
-    const col2=c===0?"rgba(255,255,255,.05)":c>=10?"#ef4444":c>=5?"#f97316":c>=2?"#eab308":"#22c55e";
+  document.getElementById("riskMini").innerHTML = [
+    { i:"⚡", v:last1h.length,  l:"Son 1 Saat" },
+    { i:"🕕", v:last6h.length,  l:"Son 6 Saat" },
+    { i:"📅", v:last24.length,  l:"Son 24 Saat" },
+  ].map(s => `<div class="risk-mini"><div style="font-size:18px">${s.i}</div><div style="font-size:20px;font-weight:800;color:#f1f5f9">${s.v}</div><div style="font-size:10px;color:#475569">${s.l}</div></div>`).join("");
+
+  const hours = Array(24).fill(0);
+  last24.forEach(q => { hours[new Date(q.time).getHours()]++; });
+  const maxH = Math.max(...hours, 1);
+  const nowH = new Date().getHours();
+
+  document.getElementById("timeline").innerHTML = hours.map((c, i) => {
+    const pct  = Math.round(c / maxH * 100);
+    const col2 = c === 0 ? "rgba(255,255,255,.05)" : c >= 10 ? "#ef4444" : c >= 5 ? "#f97316" : c >= 2 ? "#eab308" : "#22c55e";
     return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px" title="${i}:00 — ${c} deprem">
-      <div style="font-size:9px;color:#475569;font-weight:700">${c||""}</div>
-      <div style="width:100%;background:${col2};border-radius:3px 3px 0 0;height:${Math.max(2,pct*.7)}px;${i===nowH?"box-shadow:0 0 6px "+col2:""}"></div>
+      <div style="font-size:9px;color:#475569;font-weight:700">${c || ""}</div>
+      <div style="width:100%;background:${col2};border-radius:3px 3px 0 0;height:${Math.max(2, pct * .7)}px;${i === nowH ? "box-shadow:0 0 6px "+col2 : ""}"></div>
     </div>`;
   }).join("");
-  document.getElementById("tlabels").innerHTML=hours.map((_,i)=>`<span style="${i===nowH?"color:#6366f1;font-weight:700":""}">${i.toString().padStart(2,"0")}</span>`).join("");
-  const peak=hours.indexOf(Math.max(...hours));
-  document.getElementById("tlinfo").textContent=`En yoğun: ${peak}:00 (${hours[peak]} deprem) · Şu an: ${last1h.length}/saat`;
+
+  document.getElementById("tlabels").innerHTML = hours.map((_, i) =>
+    `<span style="${i === nowH ? "color:#6366f1;font-weight:700" : ""}">${i.toString().padStart(2,"0")}</span>`
+  ).join("");
+
+  const peak = hours.indexOf(Math.max(...hours));
+  document.getElementById("tlinfo").textContent =
+    `En yoğun: ${peak}:00 (${hours[peak]} deprem) · Şu an: ${last1h.length}/saat`;
 }
 
 // ── SEKME YÖNETİMİ ───────────────────────────────────────────────────────────
 function srcTab(i) {
   curSrc = i;
-  document.querySelectorAll(".src-tab").forEach((t,j)=>{
-    t.classList.toggle("on", i===j);
-  });
-  document.querySelectorAll("#src0,#src1,#src2").forEach((t,j)=>t.classList.toggle("on",i===j));
-  if (i===1 && !D.a.length) loadAfad();
-  updateTopStats();
+  OI.k = null; OI.a = null;
+  document.querySelectorAll(".src-tab").forEach((t, j) => t.classList.toggle("on", i === j));
+  document.querySelectorAll("#src0,#src1,#src2").forEach((t, j) => t.classList.toggle("on", i === j));
+  if (i === 0) { if (D.k.length) { updateTopStats("k"); renderList("k"); } }
+  if (i === 1) { if (!D.a.length) loadAfad(); else { updateTopStats("a"); renderList("a"); } }
 }
 
 function subTab(src, i, btn) {
-  const pfx = src==="k"?"k":"a";
-  btn.closest(".sub-tabs").querySelectorAll(".sub-tab").forEach(t=>t.classList.remove("on"));
+  btn.closest(".sub-tabs").querySelectorAll(".sub-tab").forEach(t => t.classList.remove("on"));
   btn.classList.add("on");
-  const subs = src==="k"?["ksub0","ksub1","ksub2"]:["asub0","asub1","asub2"];
-  subs.forEach((id,j)=>document.getElementById(id).classList.toggle("on",i===j));
-  if (i===1) setTimeout(()=>initMap(src),100);
+  const pfx  = src === "k" ? "k" : "a";
+  const subs = [pfx+"sub0", pfx+"sub1", pfx+"sub2"];
+  subs.forEach((id, j) => document.getElementById(id).classList.toggle("on", i === j));
+  if (i === 1) setTimeout(() => initMap(src), 100);
 }
 
-// ── YENILE ───────────────────────────────────────────────────────────────────
+// ── YENILE / ZAMANLAYICI ─────────────────────────────────────────────────────
 function refreshAll() {
-  cd = RM/1000;
+  cd = RM / 1000;
   clearInterval(timer);
   timer = setInterval(tick, RM);
   tick();
@@ -601,19 +636,17 @@ function refreshAll() {
 
 function tick() {
   loadKandilli();
-  if (D.a.length > 0 || curSrc===1) loadAfad();
-  document.getElementById("lf").textContent = fd(new Date());
-  cd = RM/1000;
+  if (D.a.length > 0 || curSrc === 1) loadAfad();
+  cd = RM / 1000;
 }
 
-cdTimer = setInterval(()=>{
-  cd = Math.max(0, cd-1);
-  document.getElementById("cd").textContent = cd+"sn";
-},1000);
+cdTimer = setInterval(() => {
+  cd = Math.max(0, cd - 1);
+  document.getElementById("cd").textContent = cd + "sn";
+}, 1000);
 
-setInterval(()=>fetch(B+"/health").catch(()=>{}), 14*60*1000);
+setInterval(() => fetch(B + "/health").catch(() => {}), 14 * 60 * 1000);
 
-// Başlat
 loadKandilli();
 timer = setInterval(tick, RM);
 </script>
