@@ -5,7 +5,7 @@ import httpx, re
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET"], allow_headers=["*"])
 
-KANDILLI_URL = "http://www.koeri.boun.edu.tr/scripts/lst6.asp"
+KANDILLI_URL = "https://www.koeri.boun.edu.tr/scripts/lst6.asp"
 
 def parse(html):
     quakes, seen = [], set()
