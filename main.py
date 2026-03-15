@@ -58,10 +58,10 @@ async def fetch_kandilli():
 
 async def fetch_usgs():
     end = datetime.utcnow()
-    start = end - timedelta(days=7)
+    start = end - timedelta(days=30)
     url = (
         "https://earthquake.usgs.gov/fdsnws/event/1/query"
-        f"?format=geojson&orderby=time&limit=500"
+        f"?format=geojson&orderby=time&limit=5000"
         f"&starttime={start.strftime('%Y-%m-%dT%H:%M:%S')}"
         f"&minlatitude=36&maxlatitude=42"
         f"&minlongitude=26&maxlongitude=45"
