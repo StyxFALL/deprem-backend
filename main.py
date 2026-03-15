@@ -21,7 +21,7 @@ async def depremler():
         "Take": 500,
         "SortDescriptor": {"field": "eventDate", "dir": "desc"}
     }
-    async with httpx.AsyncClient(timeout=30) as client:
+    async with httpx.AsyncClient(timeout=60) as client:
         r = await client.post(AFAD_URL, json=payload,
             headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"})
         r.raise_for_status()
