@@ -125,12 +125,17 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
 <body>
 
 <header>
-  <div class="hdr-top">
+      <div class="hdr-top">
     <div class="hdr-logo">🌍</div>
     <div>
       <div class="hdr-title">Deprem Takip TR</div>
     </div>
-    <div style="margin-left:auto;font-size:11px;color:#475569" id="lastFetch"></div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <div style="display:flex;align-items:center;gap:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;color:#22c55e">
+        <div class="pulse" id="dot"></div>
+        <span id="ltxt">Yükleniyor</span>
+      </div>
+    </div>
   </div>
   <div class="hdr-meta">
     <span class="cd-badge" id="cd">--</span>
@@ -335,7 +340,16 @@ function alertSound(){beep(880,.15,.4);setTimeout(()=>beep(660,.15,.4),180);setT
 function showToast(msg){const t=document.getElementById("toast");t.innerHTML=msg;t.style.display="block";setTimeout(()=>t.style.display="none",6000);}
 
 // ── VERİ ÇEKME ──────────────────────────────────────────────────────────────
+function sl(loading) {
+  const d = document.getElementById("dot");
+  const t = document.getElementById("ltxt");
+  if (!d || !t) return;
+  if (loading) { d.className="pulse off"; t.textContent="Güncelleniyor"; }
+  else { d.className="pulse"; t.textContent="Canlı"; }
+}
+
 async function loadKandilli() {
+  sl(true);
   setTabState("k","loading");
   try {
     const r = await fetch(B+"/kandilli");
@@ -343,6 +357,7 @@ async function loadKandilli() {
     const j = await r.json();
     processData("k", j.quakes||[]);
     setTabState("k","ok");
+    sl(false);
   } catch(e) {
     document.getElementById("kerrmsg").textContent = "⚠️ Kandilli: "+e.message;
     document.getElementById("kerr").style.display = "flex";
@@ -496,9 +511,9 @@ function renderStats(src) {
 
 // ── ÜST İSTATİSTİK ───────────────────────────────────────────────────────────
 function updateTopStats() {
-  const Q = [...D.k, ...D.a].reduce((acc, q) => {
-    if (!acc.find(x=>x.id===q.id)) acc.push(q); return acc;
-  }, []);
+  // Aktif sekmeye göre göster: 0=Kandilli, 1=AFAD, 2=Aktivite(Kandilli)
+  const src = curSrc === 1 ? "a" : "k";
+  const Q = D[src];
   if (!Q.length) return;
   const td = new Date().toISOString().slice(0,10);
   document.getElementById("st").textContent = Q.length;
@@ -564,6 +579,7 @@ function srcTab(i) {
   });
   document.querySelectorAll("#src0,#src1,#src2").forEach((t,j)=>t.classList.toggle("on",i===j));
   if (i===1 && !D.a.length) loadAfad();
+  updateTopStats();
 }
 
 function subTab(src, i, btn) {
