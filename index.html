@@ -10,24 +10,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:#03050f;color:#f1f5f9;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(99,102,241,.15),transparent),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(239,68,68,.08),transparent),radial-gradient(ellipse 50% 40% at 20% 60%,rgba(59,130,246,.06),transparent);pointer-events:none;z-index:0}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(99,102,241,.15),transparent),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(239,68,68,.08),transparent);pointer-events:none;z-index:0}
 
-header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.07);padding:0 16px}
+/* HEADER */
+header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.07);padding:0 16px}
 .hdr-top{display:flex;align-items:center;gap:10px;padding:12px 0 5px}
 .hdr-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 0 20px rgba(99,102,241,.4)}
 .hdr-title{font-size:16px;font-weight:800;letter-spacing:-.3px}
-.hdr-sub{font-size:10px;color:#64748b;margin-top:1px}
-.live-badge{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;color:#22c55e}
-.pulse{width:6px;height:6px;border-radius:50%;background:#22c55e;position:relative}
-.pulse::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid #22c55e;animation:ring 1.5s ease-out infinite;opacity:0}
-@keyframes ring{0%{transform:scale(.8);opacity:.8}100%{transform:scale(2);opacity:0}}
-.pulse.off{background:#f97316}.pulse.off::after{border-color:#f97316;animation:none}
 .hdr-meta{display:flex;align-items:center;gap:8px;padding:5px 0 11px;font-size:11px;color:#475569}
 .cd-badge{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.2);color:#818cf8;padding:2px 7px;border-radius:6px;font-size:10px}
-.btn-refresh{margin-left:auto;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:8px;padding:5px 14px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 0 14px rgba(99,102,241,.3);transition:all .2s}
-.btn-refresh:hover{box-shadow:0 0 22px rgba(99,102,241,.5);transform:translateY(-1px)}
-.btn-refresh:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-refresh{margin-left:auto;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:8px;padding:5px 14px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-refresh:disabled{opacity:.4;cursor:not-allowed}
 
+/* STAT STRIP */
 .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.07)}
 .ss-item{padding:10px 6px;text-align:center;border-right:1px solid rgba(255,255,255,.05)}
 .ss-item:last-child{border-right:none}
@@ -36,27 +31,40 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.9);backdrop-fil
 .ss-val.red{background:linear-gradient(135deg,#f87171,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .ss-lbl{font-size:10px;color:#475569;margin-top:1px;font-weight:500}
 
-.tabs{display:flex;padding:0 16px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.07);overflow-x:auto}
-.tab{padding:10px 12px;border:none;background:transparent;color:#475569;font-size:12px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
-.tab.on{color:#f1f5f9;border-bottom-color:#6366f1}
+/* ANA SEKMELER (Kandilli / AFAD / Aktivite) */
+.source-tabs{display:flex;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.07)}
+.src-tab{flex:1;padding:12px 8px;border:none;background:transparent;color:#475569;font-size:13px;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;text-align:center}
+.src-tab.on{color:#f1f5f9;border-bottom-color:#6366f1;background:rgba(99,102,241,.06)}
+.src-tab .src-badge{display:inline-flex;align-items:center;gap:5px}
+.src-tab .src-dot{width:7px;height:7px;border-radius:50%;background:#334155}
+.src-tab.on .src-dot{background:#22c55e;box-shadow:0 0 5px #22c55e}
+.src-tab.loading .src-dot{background:#f97316}
+.src-tab.error .src-dot{background:#ef4444}
 
+/* ALT SEKMELER (Liste / Harita / İstatistik) */
+.sub-tabs{display:flex;padding:0 16px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.07)}
+.sub-tab{padding:9px 12px;border:none;background:transparent;color:#475569;font-size:12px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.sub-tab.on{color:#f1f5f9;border-bottom-color:#6366f1}
+
+/* FİLTRELER */
 .filter-bar{display:flex;gap:6px;padding:10px 16px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;align-items:center}
 .fb{padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:transparent;color:#64748b;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
-.fb.on{background:linear-gradient(135deg,#6366f1,#8b5cf6);border-color:transparent;color:#fff;box-shadow:0 0 10px rgba(99,102,241,.3)}
+.fb.on{background:linear-gradient(135deg,#6366f1,#8b5cf6);border-color:transparent;color:#fff}
 .fb:hover:not(.on){border-color:rgba(255,255,255,.2);color:#94a3b8}
 .cnt{margin-left:auto;font-size:11px;color:#334155}
+.region-filter{padding:8px 16px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px}
+.region-select{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e2e8f0;padding:6px 10px;font-size:12px;outline:none;font-family:inherit}
+.region-select option{background:#0d1117}
 
-.city-filter{padding:8px 16px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px}
-.city-select{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e2e8f0;padding:6px 10px;font-size:12px;outline:none;font-family:inherit}
-.city-select option{background:#0d1117;color:#e2e8f0}
-.city-lbl{font-size:11px;color:#475569;white-space:nowrap}
-
+/* HATA */
 .err{margin:10px 16px;padding:10px 14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;color:#f87171;font-size:12px;display:none;justify-content:space-between;align-items:center}
 .retry{background:rgba(239,68,68,.15);border:none;border-radius:6px;color:#f87171;padding:3px 10px;cursor:pointer;font-size:11px;font-weight:700}
 
+/* LOADING */
 .loading{text-align:center;padding:60px 20px;color:#334155}
 .loading-icon{font-size:38px;margin-bottom:12px}
 
+/* KART LİSTESİ */
 .list{padding:10px 16px 40px;display:flex;flex-direction:column;gap:7px}
 .card{border-radius:13px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
@@ -65,7 +73,7 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.9);backdrop-fil
 .card.m3::before{background:linear-gradient(180deg,#fde047,#eab308)}
 .card.m2::before{background:linear-gradient(180deg,#d8b4fe,#a855f7)}
 .card.m1::before{background:linear-gradient(180deg,#86efac,#22c55e)}
-.card:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);transform:translateX(2px)}
+.card:hover{background:rgba(255,255,255,.05);transform:translateX(2px)}
 .card.new-q{background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.25)}
 .card.upd-q{background:rgba(234,179,8,.04);border-color:rgba(234,179,8,.2)}
 .ci{display:flex;align-items:center;gap:11px;padding:11px 13px 11px 15px}
@@ -79,25 +87,17 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.9);backdrop-fil
 .time-ago{background:rgba(255,255,255,.05);padding:1px 5px;border-radius:4px;color:#64748b;font-size:10px}
 .cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .tag{position:absolute;top:0;right:11px;font-size:9px;font-weight:700;color:#fff;padding:2px 7px;border-radius:0 0 7px 7px}
-.tnew{background:rgba(59,130,246,.7)}
-.tupd{background:rgba(234,179,8,.6)}
+.tnew{background:rgba(59,130,246,.7)}.tupd{background:rgba(234,179,8,.6)}
 .cdetail{padding:9px 15px 12px;border-top:1px solid rgba(255,255,255,.06);display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:12px;color:#475569;background:rgba(0,0,0,.25)}
 .cdetail b{color:#94a3b8}
 
-#mapbox{height:420px;position:relative;z-index:1}
-.map-legend{padding:10px 16px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.06);display:flex;gap:12px;flex-wrap:wrap}
-.ml-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#64748b}
-.ml-dot{width:10px;height:10px;border-radius:50%}
+/* HARİTA */
+.mapbox{height:400px;position:relative;z-index:1}
+.map-legend{padding:8px 16px;display:flex;gap:10px;flex-wrap:wrap;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.06)}
+.ml-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#64748b}
+.ml-dot{width:9px;height:9px;border-radius:50%}
 
-.chart-section{padding:14px 16px}
-.chart-title{font-size:13px;font-weight:700;color:#94a3b8;margin-bottom:12px}
-.bar-chart-h{display:flex;flex-direction:column;gap:5px}
-.hbar-row{display:flex;align-items:center;gap:8px}
-.hbar-lbl{font-size:10px;color:#64748b;width:55px;text-align:right;flex-shrink:0}
-.hbar-track{flex:1;background:rgba(255,255,255,.05);border-radius:4px;height:20px;position:relative;overflow:hidden}
-.hbar-fill{height:100%;border-radius:4px;transition:width .7s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;padding-left:6px;min-width:2px}
-.hbar-val{font-size:10px;font-weight:700;color:rgba(255,255,255,.8)}
-
+/* İSTATİSTİK */
 .sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px 16px}
 .sc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:14px 12px;text-align:center}
 .sc-icon{font-size:22px;margin-bottom:5px}
@@ -108,10 +108,18 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.9);backdrop-fil
 .brow{margin-bottom:10px}
 .bmeta{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;color:#64748b}
 .btrack{background:rgba(255,255,255,.05);border-radius:5px;height:7px}
-.bfill{border-radius:5px;height:7px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.bfill{border-radius:5px;height:7px;transition:width .7s}
+
+/* AKTİVİTE */
+.act-section{padding:14px 16px}
+.act-title{font-size:13px;font-weight:700;color:#94a3b8;margin-bottom:12px}
+.risk-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px;text-align:center;margin-bottom:12px}
+.risk-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.risk-mini{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 8px;text-align:center}
+.timeline-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px;overflow-x:auto}
 
 .tc{display:none}.tc.on{display:block}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);backdrop-filter:blur(12px);border-radius:14px;padding:12px 20px;font-size:13px;font-weight:700;color:#f87171;z-index:1000;display:none;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:340px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);backdrop-filter:blur(12px);border-radius:14px;padding:12px 20px;font-size:13px;font-weight:700;color:#f87171;z-index:1000;display:none;text-align:center;max-width:340px}
 </style>
 </head>
 <body>
@@ -121,17 +129,13 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.9);backdrop-fil
     <div class="hdr-logo">🌍</div>
     <div>
       <div class="hdr-title">Deprem Takip TR</div>
-      <div class="hdr-sub" id="srcLbl">Kandilli Rasathanesi</div>
     </div>
-    <div class="live-badge">
-      <div class="pulse" id="dot"></div>
-      <span id="ltxt">Yükleniyor</span>
-    </div>
+    <div style="margin-left:auto;font-size:11px;color:#475569" id="lastFetch"></div>
   </div>
   <div class="hdr-meta">
-    <span id="lf">Bağlanılıyor…</span>
     <span class="cd-badge" id="cd">--</span>
-    <button class="btn-refresh" id="rbtn" onclick="go()">↻ Yenile</button>
+    <span id="lf" style="font-size:11px;color:#475569"></span>
+    <button class="btn-refresh" id="rbtn" onclick="refreshAll()">↻ Yenile</button>
   </div>
 </header>
 
@@ -142,172 +146,276 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.9);backdrop-fil
   <div class="ss-item"><div class="ss-val red" id="s4">—</div><div class="ss-lbl">M≥4</div></div>
 </div>
 
-<div class="tabs">
-  <button class="tab on" onclick="stab(0,this)">🔴 Depremler</button>
-  <button class="tab" onclick="stab(1,this)">🗺️ Harita</button>
-  <button class="tab" onclick="stab(2,this)">📊 Grafik</button>
-  <button class="tab" onclick="stab(3,this)">📈 İstatistik</button>
+<!-- ANA SEKMELER -->
+<div class="source-tabs">
+  <button class="src-tab on" id="stab0" onclick="srcTab(0)">
+    <div class="src-badge"><div class="src-dot"></div>Kandilli</div>
+  </button>
+  <button class="src-tab" id="stab1" onclick="srcTab(1)">
+    <div class="src-badge"><div class="src-dot"></div>AFAD</div>
+  </button>
+  <button class="src-tab" id="stab2" onclick="srcTab(2)">
+    <div class="src-badge">⚡ Aktivite</div>
+  </button>
 </div>
 
-<div id="eb" class="err"><span id="em"></span><button class="retry" onclick="go()">Tekrar dene</button></div>
-
-<div id="t0" class="tc on">
-  <div class="filter-bar">
-    <button class="fb on" onclick="sm(0,this)">Tümü</button>
-    <button class="fb" onclick="sm(1,this)">M≥1</button>
-    <button class="fb" onclick="sm(2,this)">M≥2</button>
-    <button class="fb" onclick="sm(3,this)">M≥3</button>
-    <button class="fb" onclick="sm(4,this)">M≥4</button>
-    <span class="cnt" id="cl"></span>
+<!-- KANDİLLİ -->
+<div id="src0" class="tc on">
+  <div class="sub-tabs">
+    <button class="sub-tab on" onclick="subTab('k',0,this)">🔴 Liste</button>
+    <button class="sub-tab" onclick="subTab('k',1,this)">🗺️ Harita</button>
+    <button class="sub-tab" onclick="subTab('k',2,this)">📈 İstatistik</button>
   </div>
-  <div class="city-filter">
-    <span class="city-lbl">🗺️ Bölge:</span>
-    <select class="city-select" id="citySelect" onchange="rl()">
-      <option value="">Tümü Türkiye</option>
-      <option value="marmara">Marmara Bölgesi</option>
-      <option value="ege">Ege Bölgesi</option>
-      <option value="akdeniz">Akdeniz Bölgesi</option>
-      <option value="karadeniz">Karadeniz Bölgesi</option>
-      <option value="ic">İç Anadolu Bölgesi</option>
-      <option value="dogu">Doğu Anadolu Bölgesi</option>
-      <option value="guneydogu">Güneydoğu Anadolu Bölgesi</option>
-    </select>
+  <div id="kerr" class="err"><span id="kerrmsg"></span><button class="retry" onclick="loadKandilli()">Tekrar dene</button></div>
+  <div id="ksub0" class="tc on">
+    <div class="filter-bar">
+      <button class="fb on" onclick="setMag('k',0,this)">Tümü</button>
+      <button class="fb" onclick="setMag('k',1,this)">M≥1</button>
+      <button class="fb" onclick="setMag('k',2,this)">M≥2</button>
+      <button class="fb" onclick="setMag('k',3,this)">M≥3</button>
+      <button class="fb" onclick="setMag('k',4,this)">M≥4</button>
+      <span class="cnt" id="kcnt"></span>
+    </div>
+    <div class="region-filter">
+      <span style="font-size:11px;color:#475569;white-space:nowrap">🗺️ Bölge:</span>
+      <select class="region-select" id="kregion" onchange="renderList('k')">
+        <option value="">Tümü Türkiye</option>
+        <option value="marmara">Marmara</option>
+        <option value="ege">Ege</option>
+        <option value="akdeniz">Akdeniz</option>
+        <option value="karadeniz">Karadeniz</option>
+        <option value="ic">İç Anadolu</option>
+        <option value="dogu">Doğu Anadolu</option>
+        <option value="guneydogu">Güneydoğu Anadolu</option>
+      </select>
+    </div>
+    <div id="klb" class="loading"><div class="loading-icon">📡</div><div>Kandilli yükleniyor…</div></div>
+    <div class="list" id="klist" style="display:none"></div>
   </div>
-  <div id="lb" class="loading"><div class="loading-icon">📡</div><div>Veriler yükleniyor…</div><div style="font-size:11px;margin-top:6px;color:#1e293b">İlk açılışta ~30 saniye sürebilir</div></div>
-  <div class="list" id="ls" style="display:none"></div>
+  <div id="ksub1" class="tc">
+    <div class="mapbox" id="kmap"></div>
+    <div class="map-legend">
+      <div class="ml-item"><div class="ml-dot" style="background:#ef4444"></div>M≥5</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#f97316"></div>M4–5</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#eab308"></div>M3–4</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#a855f7"></div>M2–3</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#22c55e"></div>M&lt;2</div>
+    </div>
+  </div>
+  <div id="ksub2" class="tc">
+    <div class="sgrid" id="kstats"></div>
+    <div class="cbox" id="kchart"></div>
+  </div>
 </div>
 
-<div id="t1" class="tc">
-  <div id="mapbox"></div>
-  <div class="map-legend">
-    <div class="ml-item"><div class="ml-dot" style="background:#ef4444"></div>M≥5 Kırmızı</div>
-    <div class="ml-item"><div class="ml-dot" style="background:#f97316"></div>M 4–5 Turuncu</div>
-    <div class="ml-item"><div class="ml-dot" style="background:#eab308"></div>M 3–4 Sarı</div>
-    <div class="ml-item"><div class="ml-dot" style="background:#a855f7"></div>M 2–3 Mor</div>
-    <div class="ml-item"><div class="ml-dot" style="background:#22c55e"></div>M &lt; 2 Yeşil</div>
+<!-- AFAD -->
+<div id="src1" class="tc">
+  <div class="sub-tabs">
+    <button class="sub-tab on" onclick="subTab('a',0,this)">🔴 Liste</button>
+    <button class="sub-tab" onclick="subTab('a',1,this)">🗺️ Harita</button>
+    <button class="sub-tab" onclick="subTab('a',2,this)">📈 İstatistik</button>
+  </div>
+  <div id="aerr" class="err"><span id="aerrmsg"></span><button class="retry" onclick="loadAfad()">Tekrar dene</button></div>
+  <div id="asub0" class="tc on">
+    <div class="filter-bar">
+      <button class="fb on" onclick="setMag('a',0,this)">Tümü</button>
+      <button class="fb" onclick="setMag('a',1,this)">M≥1</button>
+      <button class="fb" onclick="setMag('a',2,this)">M≥2</button>
+      <button class="fb" onclick="setMag('a',3,this)">M≥3</button>
+      <button class="fb" onclick="setMag('a',4,this)">M≥4</button>
+      <span class="cnt" id="acnt"></span>
+    </div>
+    <div class="region-filter">
+      <span style="font-size:11px;color:#475569;white-space:nowrap">🗺️ Bölge:</span>
+      <select class="region-select" id="aregion" onchange="renderList('a')">
+        <option value="">Tümü Türkiye</option>
+        <option value="marmara">Marmara</option>
+        <option value="ege">Ege</option>
+        <option value="akdeniz">Akdeniz</option>
+        <option value="karadeniz">Karadeniz</option>
+        <option value="ic">İç Anadolu</option>
+        <option value="dogu">Doğu Anadolu</option>
+        <option value="guneydogu">Güneydoğu Anadolu</option>
+      </select>
+    </div>
+    <div id="alb" class="loading"><div class="loading-icon">📡</div><div>AFAD yükleniyor…</div></div>
+    <div class="list" id="alist" style="display:none"></div>
+  </div>
+  <div id="asub1" class="tc">
+    <div class="mapbox" id="amap"></div>
+    <div class="map-legend">
+      <div class="ml-item"><div class="ml-dot" style="background:#ef4444"></div>M≥5</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#f97316"></div>M4–5</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#eab308"></div>M3–4</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#a855f7"></div>M2–3</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#22c55e"></div>M&lt;2</div>
+    </div>
+  </div>
+  <div id="asub2" class="tc">
+    <div class="sgrid" id="astats"></div>
+    <div class="cbox" id="achart"></div>
   </div>
 </div>
 
-<div id="t2" class="tc">
-  <div class="chart-section">
-    <div class="chart-title">Saatlik Deprem Dağılımı (Son 24 Saat)</div>
-    <div class="bar-chart-h" id="hourChart"></div>
+<!-- AKTİVİTE -->
+<div id="src2" class="tc">
+  <div class="act-section">
+    <div class="act-title">⚡ Anlık Aktivite Skoru (Kandilli + AFAD)</div>
+    <div class="risk-card">
+      <div id="riskLabel" style="font-size:28px;font-weight:900;margin-bottom:6px">—</div>
+      <div id="riskDesc" style="font-size:12px;color:#64748b;margin-bottom:16px">Hesaplanıyor…</div>
+      <div style="background:rgba(255,255,255,.05);border-radius:20px;height:12px;overflow:hidden;margin-bottom:8px">
+        <div id="riskBar" style="height:100%;border-radius:20px;transition:width .8s ease;width:0%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#334155">
+        <span>Düşük</span><span>Normal</span><span>Yüksek</span><span>Çok Yüksek</span>
+      </div>
+    </div>
+    <div class="risk-mini-grid" id="riskMini"></div>
+    <div class="act-title">🕐 Son 24 Saatin Aktivitesi</div>
+    <div class="timeline-wrap">
+      <div id="timeline" style="display:flex;align-items:flex-end;gap:3px;height:80px;min-width:500px"></div>
+      <div id="tlabels" style="display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:#334155;min-width:500px"></div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:#475569;text-align:center" id="tlinfo"></div>
   </div>
-  <div class="chart-section">
-    <div class="chart-title">Günlük Deprem Sayısı (Son 30 Gün)</div>
-    <div class="bar-chart-h" id="dayChart"></div>
-  </div>
-</div>
-
-<div id="t3" class="tc">
-  <div class="sgrid" id="sg"></div>
-  <div class="cbox" id="cb"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const B="https://deprem-backend-kvmk.onrender.com";
-const RM=60000;
-const NEW_WINDOW_MS = 5*60*60*1000; // Son 5 saat içindekiler YENİ sayılır
+const B = "https://deprem-backend-kvmk.onrender.com";
+const RM = 30000;
 
-let Q=[],mm=0,ps={},ni=new Set(),ui=new Set(),oi=null,cd=RM/1e3,ti,ct;
-let mapObj=null,mapMarkers=[];
-const ALERT_MAG=4.0;
+// Veri depoları
+const D = { k: [], a: [] };
+const PS = { k: {}, a: {} };
+const NI = { k: new Set(), a: new Set() };
+const UI = { k: new Set(), a: new Set() };
+const OI = { k: null, a: null };
+const MM = { k: 0, a: 0 };
+const MAPS = { k: null, a: null };
+const MARKERS = { k: [], a: [] };
 
-const MC=m=>
+let cd = RM/1000, cdTimer, timer;
+let curSrc = 0;
+const ALERT_MAG = 4.0;
+
+const REGIONS = {
+  marmara:   {minLat:40.0,maxLat:42.0,minLon:26.0,maxLon:31.5},
+  ege:       {minLat:36.5,maxLat:40.0,minLon:26.0,maxLon:30.0},
+  akdeniz:   {minLat:36.0,maxLat:38.5,minLon:28.5,maxLon:36.5},
+  karadeniz: {minLat:40.5,maxLat:42.0,minLon:31.5,maxLon:40.0},
+  ic:        {minLat:38.0,maxLat:40.5,minLon:30.0,maxLon:36.0},
+  dogu:      {minLat:38.0,maxLat:40.5,minLon:36.0,maxLon:44.0},
+  guneydogu: {minLat:36.5,maxLat:38.5,minLon:36.5,maxLon:44.0},
+};
+
+const MC = m =>
   m>=5?{cls:"m5",tx:"#f87171",dot:"#ef4444",rc:"#ef4444",rp:Math.min(99,m/8*100)+"%"}:
   m>=4?{cls:"m4",tx:"#fb923c",dot:"#f97316",rc:"#f97316",rp:Math.min(99,m/8*100)+"%"}:
   m>=3?{cls:"m3",tx:"#fde047",dot:"#eab308",rc:"#eab308",rp:Math.min(99,m/8*100)+"%"}:
   m>=2?{cls:"m2",tx:"#d8b4fe",dot:"#a855f7",rc:"#a855f7",rp:Math.min(99,m/8*100)+"%"}:
        {cls:"m1",tx:"#86efac",dot:"#22c55e",rc:"#22c55e",rp:Math.min(99,m/8*100)+"%"};
 
-const fd=t=>new Date(t).toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
-const ag=t=>{const s=Math.floor((Date.now()-new Date(t))/1e3);return s<60?s+"sn":s<3600?Math.floor(s/60)+"dk":s<86400?Math.floor(s/3600)+"sa":Math.floor(s/86400)+"g"};
-
-function beep(freq=440,dur=0.3,vol=0.3){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;g.gain.value=vol;o.start();g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+dur);o.stop(ctx.currentTime+dur);}catch(e){}}
-function alertSound(){beep(880,.15,.4);setTimeout(()=>beep(660,.15,.4),180);setTimeout(()=>beep(440,.3,.4),360);}
-function showToast(msg){const t=document.getElementById("toast");t.innerHTML=msg;t.style.display="block";setTimeout(()=>t.style.display="none",6000);}
-
-async function load(){
-  sl(1);document.getElementById("rbtn").disabled=1;
-  try{
-    const r=await fetch(B+"/depremler");
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    const j=await r.json();
-    if(!j.quakes?.length)throw new Error("Veri boş");
-    const nx={};ni=new Set();ui=new Set();
-    let bigNew=null;
-    const isFirstLoad=Object.keys(ps).length===0;
-    for(const q of j.quakes){
-      const fp=`${q.mag}|${q.depth}|${q.place}`;
-      nx[q.id]=fp;
-      const p=ps[q.id];
-      if(p===undefined){
-        ni.add(q.id);
-        // Bildirim: sadece ilk yükleme değilse ve son 5 dakikada geldiyse
-        if(!isFirstLoad&&q.mag>=ALERT_MAG&&(Date.now()-new Date(q.time))<5*60*1e3)bigNew=q;
-      }else if(p!==fp)ui.add(q.id);
-    }
-    ps=nx;Q=j.quakes;
-    document.getElementById("srcLbl").textContent=j.source||"USGS";
-    document.getElementById("lf").textContent="Son: "+fd(new Date());
-    cd=RM/1e3;
-    he();rl();rs();us();rg();
-    if(mapObj)rm();
-    if(bigNew){alertSound();showToast(`🚨 M${bigNew.mag.toFixed(1)} — ${bigNew.place}`);}
-    setTimeout(()=>{ni=new Set();ui=new Set();rl();},10000);
-    sl(0,1);
-  }catch(e){se(e.message);sl(0,0);}
-  finally{document.getElementById("rbtn").disabled=0;}
-}
-
-function sl(on,ok){const d=document.getElementById("dot"),t=document.getElementById("ltxt");if(on){d.className="pulse off";t.textContent="Güncelleniyor";}else if(ok){d.className="pulse";t.textContent="Canlı";}else{d.className="pulse off";t.textContent="Hata";}}
-function se(m){document.getElementById("em").textContent="⚠️ "+m;document.getElementById("eb").style.display="flex";}
-function he(){document.getElementById("eb").style.display="none";}
-function sm(v,b){mm=v;document.querySelectorAll(".fb").forEach(x=>x.classList.remove("on"));b.classList.add("on");rl();}
-
-// Bölge koordinat sınırları
-const REGIONS = {
-  marmara:    {minLat:40.0, maxLat:42.0, minLon:26.0, maxLon:31.5},
-  ege:        {minLat:36.5, maxLat:40.0, minLon:26.0, maxLon:30.0},
-  akdeniz:    {minLat:36.0, maxLat:38.5, minLon:28.5, maxLon:36.5},
-  karadeniz:  {minLat:40.5, maxLat:42.0, minLon:31.5, maxLon:40.0},
-  ic:         {minLat:38.0, maxLat:40.5, minLon:30.0, maxLon:36.0},
-  dogu:       {minLat:38.0, maxLat:40.5, minLon:36.0, maxLon:44.0},
-  guneydogu:  {minLat:36.5, maxLat:38.5, minLon:36.5, maxLon:44.0},
+const fd = t => new Date(t).toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+const ag = t => {
+  const s=Math.floor((Date.now()-new Date(t))/1000);
+  return s<60?s+"sn":s<3600?Math.floor(s/60)+"dk":s<86400?Math.floor(s/3600)+"sa":Math.floor(s/86400)+"g";
 };
 
 function inRegion(q, key) {
   if (!key) return true;
   const r = REGIONS[key];
-  return q.lat >= r.minLat && q.lat <= r.maxLat && q.lon >= r.minLon && q.lon <= r.maxLon;
-}
-function us(){
-  if(!Q.length)return;
-  const td=new Date().toISOString().slice(0,10);
-  document.getElementById("st").textContent=Q.length;
-  document.getElementById("sd").textContent=Q.filter(q=>q.time.startsWith(td)).length;
-  document.getElementById("sm").textContent="M"+Math.max(...Q.map(q=>q.mag)).toFixed(1);
-  document.getElementById("s4").textContent=Q.filter(q=>q.mag>=4).length;
+  return q.lat>=r.minLat && q.lat<=r.maxLat && q.lon>=r.minLon && q.lon<=r.maxLon;
 }
 
-function rl(){
-  const region=document.getElementById("citySelect").value;
-  const f=Q.filter(q=>q.mag>=mm&&inRegion(q,region));
-  document.getElementById("cl").textContent=f.length+" kayıt";
-  const lb=document.getElementById("lb"),ls=document.getElementById("ls");
-  if(!Q.length){lb.style.display="block";ls.style.display="none";return;}
-  lb.style.display="none";ls.style.display="flex";
-  const now=Date.now();
-  ls.innerHTML=f.map(q=>{
-    const c=MC(q.mag);
-    // YENİ etiketi: sadece ni setinde VE son 5 saat içindeyse
-    const isNew=ni.has(q.id)&&(now-new Date(q.time))<NEW_WINDOW_MS;
-    const isUpd=ui.has(q.id);
-    const isOpen=oi===q.id;
-    const ec=isNew?"new-q":isUpd?"upd-q":"";
-    return `<div class="card ${c.cls} ${ec}" onclick="tog('${q.id}')">
+function beep(f=440,d=.3,v=.3){try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;g.gain.value=v;o.start();g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.stop(c.currentTime+d);}catch(e){}}
+function alertSound(){beep(880,.15,.4);setTimeout(()=>beep(660,.15,.4),180);setTimeout(()=>beep(440,.3,.4),360);}
+function showToast(msg){const t=document.getElementById("toast");t.innerHTML=msg;t.style.display="block";setTimeout(()=>t.style.display="none",6000);}
+
+// ── VERİ ÇEKME ──────────────────────────────────────────────────────────────
+async function loadKandilli() {
+  setTabState("k","loading");
+  try {
+    const r = await fetch(B+"/kandilli");
+    if (!r.ok) throw new Error("HTTP "+r.status);
+    const j = await r.json();
+    processData("k", j.quakes||[]);
+    setTabState("k","ok");
+  } catch(e) {
+    document.getElementById("kerrmsg").textContent = "⚠️ Kandilli: "+e.message;
+    document.getElementById("kerr").style.display = "flex";
+    setTabState("k","error");
+  }
+}
+
+async function loadAfad() {
+  setTabState("a","loading");
+  try {
+    const r = await fetch(B+"/afad");
+    if (!r.ok) throw new Error("HTTP "+r.status);
+    const j = await r.json();
+    if (j.error) throw new Error(j.error);
+    processData("a", j.quakes||[]);
+    setTabState("a","ok");
+  } catch(e) {
+    document.getElementById("aerrmsg").textContent = "⚠️ AFAD: "+e.message;
+    document.getElementById("aerr").style.display = "flex";
+    setTabState("a","error");
+  }
+}
+
+function processData(src, quakes) {
+  const isFirst = Object.keys(PS[src]).length === 0;
+  const nx = {};
+  NI[src] = new Set(); UI[src] = new Set();
+  let bigNew = null;
+  for (const q of quakes) {
+    const fp = `${q.mag}|${q.depth}|${q.place}`;
+    nx[q.id] = fp;
+    const p = PS[src][q.id];
+    if (p === undefined) {
+      NI[src].add(q.id);
+      if (!isFirst && q.mag >= ALERT_MAG && (Date.now()-new Date(q.time)) < 5*60*1000) bigNew = q;
+    } else if (p !== fp) UI[src].add(q.id);
+  }
+  PS[src] = nx;
+  D[src] = quakes;
+
+  renderList(src);
+  renderStats(src);
+  if (MAPS[src]) renderMapMarkers(src);
+  if (bigNew) { alertSound(); showToast(`🚨 M${bigNew.mag.toFixed(1)} — ${bigNew.place}`); }
+  setTimeout(() => { NI[src]=new Set(); UI[src]=new Set(); renderList(src); }, 10000);
+
+  updateTopStats();
+  renderActivity();
+}
+
+function setTabState(src, state) {
+  const idx = src==="k"?0:1;
+  const el = document.getElementById("stab"+idx);
+  el.className = "src-tab" + (curSrc===idx?" on":"") + " "+state;
+}
+
+// ── RENDER LİSTE ─────────────────────────────────────────────────────────────
+function renderList(src) {
+  const id = src==="k"?"k":"a";
+  const region = document.getElementById(id+"region").value;
+  const f = D[src].filter(q => q.mag >= MM[src] && inRegion(q, region));
+  document.getElementById(id+"cnt").textContent = f.length+" kayıt";
+  const lb = document.getElementById(id+"lb");
+  const ls = document.getElementById(id+"list");
+  if (!D[src].length) { lb.style.display="block"; ls.style.display="none"; return; }
+  lb.style.display="none"; ls.style.display="flex";
+  const now = Date.now();
+  ls.innerHTML = f.map(q => {
+    const c = MC(q.mag);
+    const isNew = NI[src].has(q.id) && (now-new Date(q.time)) < 5*3600*1000;
+    const isUpd = UI[src].has(q.id);
+    const isOpen = OI[src] === q.id;
+    return `<div class="card ${c.cls} ${isNew?"new-q":isUpd?"upd-q":""}" onclick="toggleCard('${src}','${q.id}')">
       ${isNew?'<span class="tag tnew">YENİ</span>':""}
       ${isUpd?'<span class="tag tupd">GÜNCELLENDİ</span>':""}
       <div class="ci">
@@ -331,91 +439,167 @@ function rl(){
   }).join("");
 }
 
-function tog(id){oi=oi===id?null:id;rl();}
-
-function initMap(){
-  if(mapObj)return;
-  mapObj=L.map("mapbox",{center:[39,35],zoom:6});
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OSM",maxZoom:18}).addTo(mapObj);
-  rm();
+function toggleCard(src, id) { OI[src] = OI[src]===id?null:id; renderList(src); }
+function setMag(src, v, btn) {
+  MM[src] = v;
+  const pfx = src==="k"?"k":"a";
+  btn.closest(".filter-bar").querySelectorAll(".fb").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
+  renderList(src);
 }
-function rm(){
-  if(!mapObj||!Q.length)return;
-  mapMarkers.forEach(m=>m.remove());mapMarkers=[];
-  Q.forEach(q=>{
-    const c=MC(q.mag),r=Math.max(5,Math.min(22,q.mag*3.5));
+
+// ── HARİTA ───────────────────────────────────────────────────────────────────
+function initMap(src) {
+  const id = src==="k"?"kmap":"amap";
+  if (MAPS[src]) return;
+  MAPS[src] = L.map(id, {center:[39,35],zoom:6});
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OSM",maxZoom:18}).addTo(MAPS[src]);
+  renderMapMarkers(src);
+}
+function renderMapMarkers(src) {
+  if (!MAPS[src] || !D[src].length) return;
+  MARKERS[src].forEach(m=>m.remove()); MARKERS[src]=[];
+  D[src].forEach(q => {
+    const c=MC(q.mag), r=Math.max(5,Math.min(22,q.mag*3.5));
     const icon=L.divIcon({className:"",html:`<div style="width:${r*2}px;height:${r*2}px;border-radius:50%;background:${c.dot};opacity:.85;border:2px solid rgba(255,255,255,.5);box-shadow:0 0 ${r}px ${c.dot}88"></div>`,iconSize:[r*2,r*2],iconAnchor:[r,r]});
-    const mk=L.marker([q.lat,q.lon],{icon}).addTo(mapObj);
+    const mk=L.marker([q.lat,q.lon],{icon}).addTo(MAPS[src]);
     mk.bindPopup(`<b>M${q.mag.toFixed(1)}</b><br/>${q.place}<br/><small>${fd(q.time)}</small>`);
-    mapMarkers.push(mk);
+    MARKERS[src].push(mk);
   });
 }
 
-function rg(){
-  if(!Q.length)return;
-  const now=new Date();
-  const hours=Array(24).fill(0);
-  const cutoff24=new Date(now-24*3600*1e3);
-  Q.forEach(q=>{const d=new Date(q.time);if(d>=cutoff24)hours[d.getHours()]++;});
-  const maxH=Math.max(...hours,1);
-  document.getElementById("hourChart").innerHTML=hours.map((c,i)=>{
-    const pct=Math.round(c/maxH*100);
-    return `<div class="hbar-row">
-      <span class="hbar-lbl">${i.toString().padStart(2,"0")}:00</span>
-      <div class="hbar-track"><div class="hbar-fill" style="width:${pct}%;background:linear-gradient(90deg,#6366f1,#8b5cf6)">${c>0?`<span class="hbar-val">${c}</span>`:""}</div></div>
-    </div>`;
-  }).join("");
-
-  const days={};
-  for(let i=0;i<30;i++){const d=new Date(now-i*86400*1e3);days[d.toISOString().slice(0,10)]=0;}
-  Q.forEach(q=>{const d=q.time.slice(0,10);if(d in days)days[d]++;});
-  const entries=Object.entries(days).reverse();
-  const maxD=Math.max(...Object.values(days),1);
-  document.getElementById("dayChart").innerHTML=entries.map(([d,c])=>{
-    const pct=Math.round(c/maxD*100);
-    return `<div class="hbar-row">
-      <span class="hbar-lbl">${d.slice(5)}</span>
-      <div class="hbar-track"><div class="hbar-fill" style="width:${pct}%;background:linear-gradient(90deg,#0ea5e9,#6366f1)">${c>0?`<span class="hbar-val">${c}</span>`:""}</div></div>
-    </div>`;
-  }).join("");
-}
-
-function rs(){
-  if(!Q.length)return;
-  const tot=Q.length,td=new Date().toISOString().slice(0,10);
-  document.getElementById("sg").innerHTML=[
+// ── İSTATİSTİK ───────────────────────────────────────────────────────────────
+function renderStats(src) {
+  const id = src==="k"?"k":"a";
+  const Q = D[src];
+  if (!Q.length) return;
+  const tot=Q.length, td=new Date().toISOString().slice(0,10);
+  document.getElementById(id+"stats").innerHTML=[
     {i:"📊",v:tot,l:"Son 30 Gün"},
     {i:"📅",v:Q.filter(q=>q.time.startsWith(td)).length,l:"Bugün"},
     {i:"💥",v:"M"+Math.max(...Q.map(q=>q.mag)).toFixed(1),l:"En Büyük"},
     {i:"📈",v:"M"+(Q.reduce((s,q)=>s+q.mag,0)/tot).toFixed(1),l:"Ortalama"},
-    {i:"🔵",v:Q.filter(q=>q.mag>=3).length,l:"M≥3 (30 gün)"},
-    {i:"⚠️",v:Q.filter(q=>q.mag>=4).length,l:"M≥4 (30 gün)"},
+    {i:"🔵",v:Q.filter(q=>q.mag>=3).length,l:"M≥3"},
+    {i:"⚠️",v:Q.filter(q=>q.mag>=4).length,l:"M≥4"},
   ].map(s=>`<div class="sc"><div class="sc-icon">${s.i}</div><div class="sc-val">${s.v}</div><div class="sc-lbl">${s.l}</div></div>`).join("");
   const bs=[
     {l:"M 5+",c:Q.filter(q=>q.mag>=5).length,col:"#ef4444"},
     {l:"M 4–5",c:Q.filter(q=>q.mag>=4&&q.mag<5).length,col:"#f97316"},
-    {l:"M 3–4",c:Q.filter(q=>q.mag>=3&&q.mag<4).length,col:"#f0c040"},
-    {l:"M 2–3",c:Q.filter(q=>q.mag>=2&&q.mag<3).length,col:"#3b82f6"},
+    {l:"M 3–4",c:Q.filter(q=>q.mag>=3&&q.mag<4).length,col:"#eab308"},
+    {l:"M 2–3",c:Q.filter(q=>q.mag>=2&&q.mag<3).length,col:"#a855f7"},
     {l:"M 1–2",c:Q.filter(q=>q.mag>=1&&q.mag<2).length,col:"#22c55e"},
-    {l:"M < 1",c:Q.filter(q=>q.mag<1).length,col:"#a855f7"},
+    {l:"M < 1",c:Q.filter(q=>q.mag<1).length,col:"#64748b"},
   ];
-  document.getElementById("cb").innerHTML=`<div class="ctitle">Büyüklük Dağılımı</div>`+
+  document.getElementById(id+"chart").innerHTML=`<div class="ctitle">Büyüklük Dağılımı</div>`+
     bs.map(b=>{const p=Math.round(b.c/tot*100);return`<div class="brow"><div class="bmeta"><span>${b.l}</span><span>${b.c} (%${p})</span></div><div class="btrack"><div class="bfill" style="width:${p}%;background:${b.col}"></div></div></div>`;}).join("");
 }
 
-function stab(i,b){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));
-  document.querySelectorAll(".tc").forEach(t=>t.classList.remove("on"));
-  b.classList.add("on");
-  document.getElementById("t"+i).classList.add("on");
-  if(i===1)setTimeout(initMap,100);
+// ── ÜST İSTATİSTİK ───────────────────────────────────────────────────────────
+function updateTopStats() {
+  const Q = [...D.k, ...D.a].reduce((acc, q) => {
+    if (!acc.find(x=>x.id===q.id)) acc.push(q); return acc;
+  }, []);
+  if (!Q.length) return;
+  const td = new Date().toISOString().slice(0,10);
+  document.getElementById("st").textContent = Q.length;
+  document.getElementById("sd").textContent = Q.filter(q=>q.time.startsWith(td)).length;
+  document.getElementById("sm").textContent = "M"+Math.max(...Q.map(q=>q.mag)).toFixed(1);
+  document.getElementById("s4").textContent = Q.filter(q=>q.mag>=4).length;
 }
 
-function go(){cd=RM/1e3;clearInterval(ti);ti=setInterval(load,RM);load();}
+// ── AKTİVİTE ─────────────────────────────────────────────────────────────────
+function renderActivity() {
+  const Q = D.k.length ? D.k : D.a;
+  if (!Q.length) return;
+  const now = Date.now();
+  const cutoff24 = now - 24*3600*1000;
+  const last24 = Q.filter(q=>new Date(q.time)>=cutoff24);
+  const last1h  = Q.filter(q=>(now-new Date(q.time))<3600*1000);
+  const last6h  = Q.filter(q=>(now-new Date(q.time))<6*3600*1000);
 
-ct=setInterval(()=>{cd=Math.max(0,cd-1);document.getElementById("cd").textContent=cd+"sn";},1000);
-setInterval(()=>fetch(B+"/health").catch(()=>{}),14*60*1000);
-load();ti=setInterval(load,RM);
+  let score = 0;
+  score += Math.min(40, last1h.length*4);
+  score += Math.min(30, last1h.filter(q=>q.mag>=3).length*10);
+  score += Math.min(20, last6h.filter(q=>q.mag>=4).length*10);
+  score += last24.filter(q=>q.mag>=5).length>=1?10:0;
+  score = Math.min(100, score);
+
+  let txt, col, desc;
+  if(score<20){txt="🟢 Düşük";col="linear-gradient(90deg,#22c55e,#16a34a)";desc="Deprem aktivitesi normalin altında.";}
+  else if(score<45){txt="🟡 Normal";col="linear-gradient(90deg,#eab308,#ca8a04)";desc="Deprem aktivitesi normal seviyelerde.";}
+  else if(score<70){txt="🟠 Yüksek";col="linear-gradient(90deg,#f97316,#ea580c)";desc="Son saatlerde belirgin deprem aktivitesi var.";}
+  else{txt="🔴 Çok Yüksek";col="linear-gradient(90deg,#ef4444,#dc2626)";desc="Dikkat! Yoğun deprem aktivitesi.";}
+
+  document.getElementById("riskLabel").textContent = txt;
+  document.getElementById("riskDesc").textContent = desc;
+  document.getElementById("riskBar").style.cssText = `height:100%;border-radius:20px;transition:width .8s ease;width:${score}%;background:${col}`;
+  document.getElementById("riskMini").innerHTML=[
+    {i:"⚡",v:last1h.length,l:"Son 1 Saat"},
+    {i:"🕕",v:last6h.length,l:"Son 6 Saat"},
+    {i:"📅",v:last24.length,l:"Son 24 Saat"},
+  ].map(s=>`<div class="risk-mini"><div style="font-size:18px">${s.i}</div><div style="font-size:20px;font-weight:800;color:#f1f5f9">${s.v}</div><div style="font-size:10px;color:#475569">${s.l}</div></div>`).join("");
+
+  const hours=Array(24).fill(0);
+  last24.forEach(q=>{hours[new Date(q.time).getHours()]++;});
+  const maxH=Math.max(...hours,1);
+  const nowH=new Date().getHours();
+  document.getElementById("timeline").innerHTML=hours.map((c,i)=>{
+    const pct=Math.round(c/maxH*100);
+    const col2=c===0?"rgba(255,255,255,.05)":c>=10?"#ef4444":c>=5?"#f97316":c>=2?"#eab308":"#22c55e";
+    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px" title="${i}:00 — ${c} deprem">
+      <div style="font-size:9px;color:#475569;font-weight:700">${c||""}</div>
+      <div style="width:100%;background:${col2};border-radius:3px 3px 0 0;height:${Math.max(2,pct*.7)}px;${i===nowH?"box-shadow:0 0 6px "+col2:""}"></div>
+    </div>`;
+  }).join("");
+  document.getElementById("tlabels").innerHTML=hours.map((_,i)=>`<span style="${i===nowH?"color:#6366f1;font-weight:700":""}">${i.toString().padStart(2,"0")}</span>`).join("");
+  const peak=hours.indexOf(Math.max(...hours));
+  document.getElementById("tlinfo").textContent=`En yoğun: ${peak}:00 (${hours[peak]} deprem) · Şu an: ${last1h.length}/saat`;
+}
+
+// ── SEKME YÖNETİMİ ───────────────────────────────────────────────────────────
+function srcTab(i) {
+  curSrc = i;
+  document.querySelectorAll(".src-tab").forEach((t,j)=>{
+    t.classList.toggle("on", i===j);
+  });
+  document.querySelectorAll("#src0,#src1,#src2").forEach((t,j)=>t.classList.toggle("on",i===j));
+  if (i===1 && !D.a.length) loadAfad();
+}
+
+function subTab(src, i, btn) {
+  const pfx = src==="k"?"k":"a";
+  btn.closest(".sub-tabs").querySelectorAll(".sub-tab").forEach(t=>t.classList.remove("on"));
+  btn.classList.add("on");
+  const subs = src==="k"?["ksub0","ksub1","ksub2"]:["asub0","asub1","asub2"];
+  subs.forEach((id,j)=>document.getElementById(id).classList.toggle("on",i===j));
+  if (i===1) setTimeout(()=>initMap(src),100);
+}
+
+// ── YENILE ───────────────────────────────────────────────────────────────────
+function refreshAll() {
+  cd = RM/1000;
+  clearInterval(timer);
+  timer = setInterval(tick, RM);
+  tick();
+}
+
+function tick() {
+  loadKandilli();
+  if (D.a.length > 0 || curSrc===1) loadAfad();
+  document.getElementById("lf").textContent = fd(new Date());
+  cd = RM/1000;
+}
+
+cdTimer = setInterval(()=>{
+  cd = Math.max(0, cd-1);
+  document.getElementById("cd").textContent = cd+"sn";
+},1000);
+
+setInterval(()=>fetch(B+"/health").catch(()=>{}), 14*60*1000);
+
+// Başlat
+loadKandilli();
+timer = setInterval(tick, RM);
 </script>
 </body>
 </html>
