@@ -50,45 +50,50 @@ async def fetch_kandilli():
                 r = await client.get(url, headers={"User-Agent": "Mozilla/5.0"})
                 if r.status_code == 200:
                     data = parse_kandilli(r.text)
-                    if data:
-                        return data
-            except:
-                continue
+                    if data: return data
+            except: continue
     return None
 
-async def fetch_usgs():
+async def fetch_usgs(days=30):
     end = datetime.utcnow()
-    start = end - timedelta(days=30)
-    url = (
-        "https://earthquake.usgs.gov/fdsnws/event/1/query"
-        f"?format=geojson&orderby=time&limit=5000"
-        f"&starttime={start.strftime('%Y-%m-%dT%H:%M:%S')}"
-        f"&minlatitude=36&maxlatitude=42"
-        f"&minlongitude=26&maxlongitude=45"
-    )
-    async with httpx.AsyncClient(timeout=60) as client:
-        r = await client.get(url, headers={"User-Agent": "Mozilla/5.0"})
-        r.raise_for_status()
-    features = r.json().get("features", [])
-    return [{
-        "id":      f["id"],
-        "time":    datetime.utcfromtimestamp(f["properties"]["time"] / 1000).strftime("%Y-%m-%dT%H:%M:%S"),
-        "lat":     f["geometry"]["coordinates"][1],
-        "lon":     f["geometry"]["coordinates"][0],
-        "depth":   f["geometry"]["coordinates"][2],
-        "mag":     f["properties"].get("mag") or 0,
-        "magType": f["properties"].get("magType") or "",
-        "place":   f["properties"].get("place") or "",
-    } for f in features]
+    start = end - timedelta(days=days)
+    # USGS max 20000 limit, sayfalayarak çek
+    all_quakes = []
+    offset = 1
+    while True:
+        url = (
+            "https://earthquake.usgs.gov/fdsnws/event/1/query"
+            f"?format=geojson&orderby=time&limit=2000&offset={offset}"
+            f"&starttime={start.strftime('%Y-%m-%dT%H:%M:%S')}"
+            f"&endtime={end.strftime('%Y-%m-%dT%H:%M:%S')}"
+            f"&minlatitude=36&maxlatitude=42"
+            f"&minlongitude=26&maxlongitude=45"
+        )
+        async with httpx.AsyncClient(timeout=60) as client:
+            r = await client.get(url, headers={"User-Agent": "Mozilla/5.0"})
+            r.raise_for_status()
+        features = r.json().get("features", [])
+        for f in features:
+            p = f["properties"]
+            c = f["geometry"]["coordinates"]
+            all_quakes.append({
+                "id":      f["id"],
+                "time":    datetime.utcfromtimestamp(p["time"] / 1000).strftime("%Y-%m-%dT%H:%M:%S"),
+                "lat":     c[1], "lon": c[0], "depth": c[2],
+                "mag":     p.get("mag") or 0,
+                "magType": p.get("magType") or "",
+                "place":   p.get("place") or "",
+            })
+        if len(features) < 2000: break
+        offset += 2000
+    return all_quakes
 
 @app.get("/depremler")
 async def depremler():
-    # Önce Kandilli'yi dene
     data = await fetch_kandilli()
     source = "Kandilli"
-    # Kandilli çalışmazsa USGS'ye düş
     if not data:
-        data = await fetch_usgs()
+        data = await fetch_usgs(30)
         source = "USGS"
     return {"count": len(data), "source": source, "quakes": data}
 
