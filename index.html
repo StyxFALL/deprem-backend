@@ -161,9 +161,16 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.9);backdrop-fil
     <span class="cnt" id="cl"></span>
   </div>
   <div class="city-filter">
-    <span class="city-lbl">🏙️ Şehir:</span>
+    <span class="city-lbl">🗺️ Bölge:</span>
     <select class="city-select" id="citySelect" onchange="rl()">
-      <option value="">Tümü</option>
+      <option value="">Tümü Türkiye</option>
+      <option value="marmara">Marmara Bölgesi</option>
+      <option value="ege">Ege Bölgesi</option>
+      <option value="akdeniz">Akdeniz Bölgesi</option>
+      <option value="karadeniz">Karadeniz Bölgesi</option>
+      <option value="ic">İç Anadolu Bölgesi</option>
+      <option value="dogu">Doğu Anadolu Bölgesi</option>
+      <option value="guneydogu">Güneydoğu Anadolu Bölgesi</option>
     </select>
   </div>
   <div id="lb" class="loading"><div class="loading-icon">📡</div><div>Veriler yükleniyor…</div><div style="font-size:11px;margin-top:6px;color:#1e293b">İlk açılışta ~30 saniye sürebilir</div></div>
@@ -260,15 +267,22 @@ function se(m){document.getElementById("em").textContent="⚠️ "+m;document.ge
 function he(){document.getElementById("eb").style.display="none";}
 function sm(v,b){mm=v;document.querySelectorAll(".fb").forEach(x=>x.classList.remove("on"));b.classList.add("on");rl();}
 
-function buildCityList(){
-  const sel=document.getElementById("citySelect");const cur=sel.value;
-  const cities=new Set();
-  Q.forEach(q=>{const m=q.place.match(/\(([^)]+)\)$/)||q.place.match(/,\s*([^,]+)$/);if(m)cities.add(m[1].trim());});
-  sel.innerHTML='<option value="">Tümü</option>'+[...cities].sort().map(c=>`<option value="${c}">${c}</option>`).join("");
-  if(cur)sel.value=cur;
-}
-function getCity(q){const m=q.place.match(/\(([^)]+)\)$/)||q.place.match(/,\s*([^,]+)$/);return m?m[1].trim():"";}
+// Bölge koordinat sınırları
+const REGIONS = {
+  marmara:    {minLat:40.0, maxLat:42.0, minLon:26.0, maxLon:31.5},
+  ege:        {minLat:36.5, maxLat:40.0, minLon:26.0, maxLon:30.0},
+  akdeniz:    {minLat:36.0, maxLat:38.5, minLon:28.5, maxLon:36.5},
+  karadeniz:  {minLat:40.5, maxLat:42.0, minLon:31.5, maxLon:40.0},
+  ic:         {minLat:38.0, maxLat:40.5, minLon:30.0, maxLon:36.0},
+  dogu:       {minLat:38.0, maxLat:40.5, minLon:36.0, maxLon:44.0},
+  guneydogu:  {minLat:36.5, maxLat:38.5, minLon:36.5, maxLon:44.0},
+};
 
+function inRegion(q, key) {
+  if (!key) return true;
+  const r = REGIONS[key];
+  return q.lat >= r.minLat && q.lat <= r.maxLat && q.lon >= r.minLon && q.lon <= r.maxLon;
+}
 function us(){
   if(!Q.length)return;
   const td=new Date().toISOString().slice(0,10);
@@ -279,9 +293,8 @@ function us(){
 }
 
 function rl(){
-  buildCityList();
-  const city=document.getElementById("citySelect").value;
-  const f=Q.filter(q=>q.mag>=mm&&(!city||getCity(q)===city));
+  const region=document.getElementById("citySelect").value;
+  const f=Q.filter(q=>q.mag>=mm&&inRegion(q,region));
   document.getElementById("cl").textContent=f.length+" kayıt";
   const lb=document.getElementById("lb"),ls=document.getElementById("ls");
   if(!Q.length){lb.style.display="block";ls.style.display="none";return;}
