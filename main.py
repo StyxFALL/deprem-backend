@@ -1,47 +1,44 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import httpx, re
+from datetime import datetime, timedelta
+import httpx, json
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET"], allow_headers=["*"])
 
-KANDILLI_URL = "https://www.koeri.boun.edu.tr/scripts/lst6.asp"
-
-def parse(html):
-    quakes, seen = [], set()
-    pat = re.compile(r'(\d{4}\.\d{2}\.\d{2})\s+(\d{2}:\d{2}:\d{2})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.-]+)\s+([\d.-]+)\s+([\d.-]+)\s{2,}(.+?)(?:\s{2,}|$)')
-    for line in html.splitlines():
-        m = pat.match(line.strip())
-        if not m: continue
-        vals = {"MD": m.group(6), "ML": m.group(7), "Mw": m.group(8)}
-        mag, mag_type = None, None
-        for t in ["ML", "Mw", "MD"]:
-            if vals[t] != "-.-":
-                try: mag = float(vals[t]); mag_type = t; break
-                except: pass
-        if mag is None: continue
-        qid = f"{m.group(1)}{m.group(2)}{m.group(3)}"
-        if qid in seen: continue
-        seen.add(qid)
-        quakes.append({
-            "id": qid,
-            "time": f"{m.group(1).replace('.', '-')}T{m.group(2)}",
-            "lat": float(m.group(3)),
-            "lon": float(m.group(4)),
-            "depth": float(m.group(5)),
-            "mag": mag,
-            "magType": mag_type,
-            "place": m.group(9).strip()
-        })
-    return sorted(quakes, key=lambda q: q["time"], reverse=True)
+AFAD_URL = "https://deprem.afad.gov.tr/EventData/GetEventsByFilter"
 
 @app.get("/depremler")
 async def depremler():
-    async with httpx.AsyncClient(timeout=20) as client:
-        r = await client.get(KANDILLI_URL, headers={"User-Agent": "Mozilla/5.0"})
+    end = datetime.utcnow()
+    start = end - timedelta(days=3)
+    payload = {
+        "EventSearchFilterList": [
+            {"FilterType": 8, "Value": start.strftime("%Y-%m-%dT%H:%M:%S")},
+            {"FilterType": 9, "Value": end.strftime("%Y-%m-%dT%H:%M:%S")},
+        ],
+        "Skip": 0,
+        "Take": 500,
+        "SortDescriptor": {"field": "eventDate", "dir": "desc"}
+    }
+    async with httpx.AsyncClient(timeout=30) as client:
+        r = await client.post(AFAD_URL, json=payload,
+            headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"})
         r.raise_for_status()
-    data = parse(r.text)
-    return {"count": len(data), "quakes": data}
+    raw = r.json()
+    quakes = []
+    for q in (raw if isinstance(raw, list) else raw.get("eventList", [])):
+        quakes.append({
+            "id":      str(q.get("eventID") or q.get("id", "")),
+            "time":    q.get("eventDate") or q.get("date", ""),
+            "lat":     float(q.get("latitude") or q.get("lat", 0)),
+            "lon":     float(q.get("longitude") or q.get("lon", 0)),
+            "depth":   float(q.get("depth", 0)),
+            "mag":     float(q.get("magnitude") or q.get("ml") or q.get("mag", 0)),
+            "magType": q.get("magnitudeType", "ML"),
+            "place":   q.get("location") or q.get("place", ""),
+        })
+    return {"count": len(quakes), "quakes": quakes}
 
 @app.get("/health")
 async def health():
