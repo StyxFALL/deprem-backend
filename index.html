@@ -5,99 +5,239 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Türkiye Deprem Takip</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
-  .header { background: linear-gradient(135deg,#1e1b4b,#312e81); padding: 14px 16px 10px; }
-  .header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-  .header-title { font-size: 18px; font-weight: 700; }
-  .live-badge { margin-left: auto; display: flex; align-items: center; gap: 5px; font-size: 11px; color: #a5b4fc; background: #1e1b4b; padding: 3px 10px; border-radius: 20px; }
-  .live-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-  .header-sub { font-size: 11px; color: #818cf8; display: flex; align-items: center; gap: 8px; }
-  .refresh-btn { margin-left: auto; background: #6366f1; border: none; border-radius: 16px; padding: 3px 12px; color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; }
-  .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .tabs { display: flex; background: #1e293b; border-bottom: 1px solid #334155; }
-  .tab { flex: 1; padding: 10px 4px; border: none; cursor: pointer; font-size: 11px; font-weight: 700; background: transparent; color: #64748b; border-bottom: 2px solid transparent; }
-  .tab.active { background: #312e81; color: #a5b4fc; border-bottom: 2px solid #6366f1; }
-  .filter-bar { padding: 8px 14px; background: #1e293b; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid #334155; }
-  .filter-btn { padding: 4px 11px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; font-weight: 700; background: #334155; color: #94a3b8; }
-  .filter-btn.active { background: #8b5cf6; color: #fff; }
-  .count-label { margin-left: auto; font-size: 11px; color: #475569; }
-  .list { padding: 10px 14px 24px; display: flex; flex-direction: column; gap: 7px; }
-  .card { border-radius: 12px; padding: 11px 13px; border: 1px solid #334155; cursor: pointer; display: flex; align-items: center; gap: 11px; background: #1e293b; position: relative; transition: all .3s; }
-  .card.new { background: #0c2233; border-color: #0ea5e9; }
-  .card.updated { background: #1a1a00; border-color: #eab308; }
-  .card.open { background: #1e1b4b; border-color: #6366f1; }
-  .badge-new { position: absolute; top: 0; right: 10px; background: #0ea5e9; border-radius: 0 0 6px 6px; font-size: 9px; font-weight: 700; color: #fff; padding: 1px 7px; }
-  .badge-upd { position: absolute; top: 0; right: 10px; background: #ca8a04; border-radius: 0 0 6px 6px; font-size: 9px; font-weight: 700; color: #fff; padding: 1px 7px; }
-  .mag-box { min-width: 50px; height: 50px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
-  .mag-val { font-size: 14px; font-weight: 900; }
-  .mag-type { font-size: 9px; opacity: .7; }
-  .card-info { flex: 1; min-width: 0; }
-  .card-place { font-weight: 700; font-size: 13px; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .card-time { font-size: 11px; color: #64748b; margin-top: 2px; }
-  .card-detail { margin-top: 8px; font-size: 12px; color: #94a3b8; border-top: 1px solid #334155; padding-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .card-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .error-box { margin: 10px 14px; padding: 12px 14px; background: #450a0a; border-radius: 10px; color: #fca5a5; font-size: 12px; border: 1px solid #7f1d1d; display: flex; justify-content: space-between; align-items: center; }
-  .retry-btn { background: #7f1d1d; border: none; border-radius: 6px; color: #fca5a5; padding: 3px 10px; cursor: pointer; font-size: 11px; font-weight: 700; }
-  .loading { text-align: center; padding: 50px; color: #475569; }
-  .loading-icon { font-size: 32px; margin-bottom: 8px; }
-  .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; padding: 14px; }
-  .stat-card { background: #1e293b; border-radius: 12px; padding: 13px 10px; text-align: center; border: 1px solid #334155; }
-  .stat-icon { font-size: 20px; }
-  .stat-val { font-size: 21px; font-weight: 800; color: #f1f5f9; }
-  .stat-label { font-size: 11px; color: #64748b; }
-  .bar-chart { background: #1e293b; border-radius: 12px; padding: 14px; border: 1px solid #334155; margin: 0 14px 14px; }
-  .bar-row { margin-bottom: 9px; }
-  .bar-labels { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
-  .bar-track { background: #334155; border-radius: 4px; height: 7px; }
-  .bar-fill { border-radius: 4px; height: 7px; transition: width .5s; }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
+:root {
+  --bg: #060818;
+  --bg2: #0d1117;
+  --bg3: #161b27;
+  --border: #21262d;
+  --text: #e6edf3;
+  --muted: #7d8590;
+  --accent: #7c3aed;
+  --accent2: #6366f1;
+  --green: #3fb950;
+  --orange: #f97316;
+  --yellow: #f0c040;
+  --blue: #58a6ff;
+  --red: #f85149;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* HEADER */
+.header {
+  background: linear-gradient(180deg, #0d0f1e 0%, #060818 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px 12px;
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.header-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.logo { font-size: 24px; }
+.title { font-size: 17px; font-weight: 700; letter-spacing: -.3px; }
+.live-pill {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600;
+  background: #0d2318; color: var(--green);
+  border: 1px solid #1a4a2e;
+  padding: 4px 10px; border-radius: 20px;
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse 2s infinite;
+}
+.live-dot.loading { background: var(--orange); box-shadow: 0 0 6px var(--orange); animation: none; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.header-meta { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--muted); }
+.refresh-btn {
+  margin-left: auto;
+  background: var(--accent2); border: none; border-radius: 8px;
+  padding: 5px 14px; color: #fff; font-size: 11px; font-weight: 700;
+  cursor: pointer; transition: opacity .2s;
+}
+.refresh-btn:disabled { opacity: .4; cursor: not-allowed; }
+.refresh-btn:hover:not(:disabled) { opacity: .85; }
+
+/* STATS BAR */
+.stats-bar {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 1px; background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stat-item {
+  background: var(--bg2);
+  padding: 10px 8px; text-align: center;
+}
+.stat-val { font-size: 18px; font-weight: 800; color: var(--text); }
+.stat-lbl { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+/* TABS */
+.tabs {
+  display: flex; background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+}
+.tab {
+  padding: 10px 14px; border: none; background: transparent;
+  color: var(--muted); font-size: 12px; font-weight: 600;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all .2s;
+}
+.tab.active { color: var(--text); border-bottom-color: var(--accent2); }
+
+/* FILTERS */
+.filter-bar {
+  display: flex; gap: 6px; padding: 10px 16px;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  flex-wrap: wrap; align-items: center;
+}
+.filt {
+  padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+}
+.filt.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.filt:hover:not(.active) { border-color: var(--muted); color: var(--text); }
+.count-lbl { margin-left: auto; font-size: 11px; color: var(--muted); }
+
+/* ERROR */
+.err {
+  margin: 12px 16px; padding: 12px 14px;
+  background: #1a0a0a; border: 1px solid #5a1515;
+  border-radius: 10px; color: #f85149; font-size: 12px;
+  display: none; justify-content: space-between; align-items: center;
+}
+.retry { background: #3a1515; border: none; border-radius: 6px; color: #f85149; padding: 3px 10px; cursor: pointer; font-size: 11px; font-weight: 700; }
+
+/* LOADING */
+.loading { text-align: center; padding: 60px 20px; color: var(--muted); }
+.loading-icon { font-size: 36px; margin-bottom: 12px; }
+.loading-sub { font-size: 12px; margin-top: 6px; color: #334155; }
+
+/* LIST */
+.list { padding: 12px 16px 32px; display: flex; flex-direction: column; gap: 6px; }
+
+.card {
+  border-radius: 12px; border: 1px solid var(--border);
+  background: var(--bg3); cursor: pointer;
+  transition: border-color .2s, background .2s;
+  overflow: hidden; position: relative;
+}
+.card:hover { border-color: #30363d; background: #1c2030; }
+.card.new-q { border-color: #1a4a6a; background: #090f1a; }
+.card.upd-q { border-color: #3a2e00; background: #0f0d00; }
+.card.open-q { border-color: var(--accent2); background: #0d0f25; }
+
+.card-inner { display: flex; align-items: center; gap: 12px; padding: 11px 13px; }
+
+.mag-badge {
+  min-width: 52px; height: 52px; border-radius: 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.mag-num { font-size: 15px; font-weight: 900; }
+.mag-type-lbl { font-size: 9px; opacity: .6; margin-top: 1px; }
+
+.card-body { flex: 1; min-width: 0; }
+.card-place { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-time { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.card-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.tag {
+  position: absolute; top: 0; right: 12px;
+  font-size: 9px; font-weight: 700; color: #fff;
+  padding: 2px 8px; border-radius: 0 0 6px 6px;
+}
+.tag-new { background: #1a6a9a; }
+.tag-upd { background: #7a5a00; }
+
+.card-detail {
+  padding: 10px 13px 12px;
+  border-top: 1px solid var(--border);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  font-size: 12px; color: var(--muted);
+  background: rgba(0,0,0,.2);
+}
+.card-detail b { color: var(--text); }
+
+/* TAB CONTENT */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* STATS TAB */
+.stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; padding: 14px 16px; }
+.stat-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 12px; text-align: center;
+}
+.stat-card-icon { font-size: 22px; margin-bottom: 4px; }
+.stat-card-val { font-size: 22px; font-weight: 800; color: var(--text); }
+.stat-card-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.chart-box {
+  margin: 0 16px 16px; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: 12px; padding: 14px;
+}
+.chart-title { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 12px; }
+.bar-row { margin-bottom: 10px; }
+.bar-meta { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+.bar-track { background: #1c2030; border-radius: 4px; height: 6px; }
+.bar-fill { border-radius: 4px; height: 6px; transition: width .6s ease; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="header-row">
-    <span style="font-size:22px">🌍</span>
-    <span class="header-title">Türkiye Deprem Takip</span>
-    <div class="live-badge">
-      <span class="live-dot" id="liveDot" style="background:#f97316"></span>
-      <span id="liveText">Yükleniyor…</span>
+  <div class="header-top">
+    <span class="logo">🌍</span>
+    <span class="title">Türkiye Deprem Takip</span>
+    <div class="live-pill">
+      <span class="live-dot" id="liveDot"></span>
+      <span id="liveText">Yükleniyor</span>
     </div>
   </div>
-  <div class="header-sub">
-    <span>📡 USGS Canlı</span>
+  <div class="header-meta">
+    <span id="sourceLabel">📡 Kandilli Rasathanesi</span>
     <span id="lastFetch"></span>
-    <span id="countdown" style="color:#475569"></span>
-    <button class="refresh-btn" id="refreshBtn" onclick="refresh()">↻ Yenile</button>
+    <span id="cdLabel"></span>
+    <button class="refresh-btn" id="refreshBtn" onclick="doRefresh()">↻ Yenile</button>
   </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-val" id="sTotal">—</div><div class="stat-lbl">Toplam</div></div>
+  <div class="stat-item"><div class="stat-val" id="sToday">—</div><div class="stat-lbl">Bugün</div></div>
+  <div class="stat-item"><div class="stat-val" id="sMax">—</div><div class="stat-lbl">En Büyük</div></div>
+  <div class="stat-item"><div class="stat-val" id="sM4">—</div><div class="stat-lbl">M≥4</div></div>
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="switchTab(0)">🔴 Depremler</button>
-  <button class="tab" onclick="switchTab(1)">📊 İstatistik</button>
+  <button class="tab active" onclick="switchTab(0,this)">🔴 Depremler</button>
+  <button class="tab" onclick="switchTab(1,this)">📊 İstatistik</button>
 </div>
 
-<div id="errorBox" class="error-box" style="display:none">
-  <span id="errorMsg"></span>
-  <button class="retry-btn" onclick="refresh()">Tekrar dene</button>
+<div id="errBox" class="err">
+  <span id="errMsg"></span>
+  <button class="retry" onclick="doRefresh()">Tekrar dene</button>
 </div>
 
 <!-- TAB 0 -->
 <div id="tab0" class="tab-content active">
   <div class="filter-bar">
-    <button class="filter-btn active" onclick="setMag(0,this)">Tümü</button>
-    <button class="filter-btn" onclick="setMag(1,this)">M≥1</button>
-    <button class="filter-btn" onclick="setMag(2,this)">M≥2</button>
-    <button class="filter-btn" onclick="setMag(3,this)">M≥3</button>
-    <button class="filter-btn" onclick="setMag(4,this)">M≥4</button>
-    <span class="count-label" id="countLabel">0 kayıt</span>
+    <button class="filt active" onclick="setMag(0,this)">Tümü</button>
+    <button class="filt" onclick="setMag(1,this)">M≥1</button>
+    <button class="filt" onclick="setMag(2,this)">M≥2</button>
+    <button class="filt" onclick="setMag(3,this)">M≥3</button>
+    <button class="filt" onclick="setMag(4,this)">M≥4</button>
+    <span class="count-lbl" id="cntLbl"></span>
   </div>
-  <div id="loading" class="loading">
+  <div id="loadingBox" class="loading">
     <div class="loading-icon">📡</div>
     <div>Deprem verileri yükleniyor…</div>
-    <div style="font-size:12px;margin-top:6px;color:#334155">ilk açılışta ~30 saniye sürebilir</div>
+    <div class="loading-sub">İlk açılışta ~30 saniye sürebilir</div>
   </div>
   <div class="list" id="list" style="display:none"></div>
 </div>
@@ -105,196 +245,187 @@
 <!-- TAB 1 -->
 <div id="tab1" class="tab-content">
   <div class="stats-grid" id="statsGrid"></div>
-  <div class="bar-chart" id="barChart"></div>
+  <div class="chart-box" id="chartBox"></div>
 </div>
 
 <script>
 const BACKEND = "https://deprem-backend-kvmk.onrender.com";
 const REFRESH_MS = 60000;
 
-let quakes = [];
-let minMag = 0;
-let prevState = {};
-let newIds = new Set();
-let updIds = new Set();
-let openId = null;
-let countdown = REFRESH_MS / 1000;
-let timer, cdTimer;
+let quakes=[], minMag=0, prevState={}, newIds=new Set(), updIds=new Set(), openId=null, cd=REFRESH_MS/1000, timer, cdTimer;
 
-const MAG_COLOR = m =>
-  m>=5 ? {bg:"#7c2d12",tx:"#fdba74",dot:"#f97316"} :
-  m>=4 ? {bg:"#713f12",tx:"#fde047",dot:"#eab308"} :
-  m>=3 ? {bg:"#1e3a5f",tx:"#93c5fd",dot:"#3b82f6"} :
-  m>=2 ? {bg:"#1a2e1a",tx:"#86efac",dot:"#22c55e"} :
-         {bg:"#1e1e2e",tx:"#a78bfa",dot:"#7c3aed"};
+const MC = m =>
+  m>=5 ? {bg:"#2d1a00",tx:"#fb923c",dot:"#f97316"} :
+  m>=4 ? {bg:"#1a1a00",tx:"#fbbf24",dot:"#f59e0b"} :
+  m>=3 ? {bg:"#001a2d",tx:"#60a5fa",dot:"#3b82f6"} :
+  m>=2 ? {bg:"#001a0a",tx:"#4ade80",dot:"#22c55e"} :
+         {bg:"#100020",tx:"#c084fc",dot:"#a855f7"};
 
-function fmtDate(t) {
-  return new Date(t).toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
-}
-function timeAgo(t) {
-  const s = Math.floor((Date.now()-new Date(t))/1000);
-  if(s<60) return s+"sn önce";
-  if(s<3600) return Math.floor(s/60)+"dk önce";
-  if(s<86400) return Math.floor(s/3600)+"sa önce";
-  return Math.floor(s/86400)+"g önce";
-}
+const fmt = t => new Date(t).toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+const ago = t => {
+  const s=Math.floor((Date.now()-new Date(t))/1000);
+  if(s<60) return s+"sn";
+  if(s<3600) return Math.floor(s/60)+"dk";
+  if(s<86400) return Math.floor(s/3600)+"sa";
+  return Math.floor(s/86400)+"g";
+};
 
 async function fetchData() {
-  setLive(false);
+  setLoading(true);
   document.getElementById("refreshBtn").disabled = true;
   try {
     const res = await fetch(BACKEND+"/depremler");
     if(!res.ok) throw new Error("Sunucu hatası: "+res.status);
     const json = await res.json();
-    if(!json.quakes || json.quakes.length===0) throw new Error("Veri boş geldi.");
+    if(!json.quakes?.length) throw new Error("Veri boş geldi.");
 
-    const nextState = {};
-    newIds = new Set();
-    updIds = new Set();
+    const next={};
+    newIds=new Set(); updIds=new Set();
     for(const q of json.quakes) {
-      const fp = q.mag+"|"+q.depth+"|"+q.place;
-      nextState[q.id] = fp;
-      const prev = prevState[q.id];
-      if(prev===undefined) newIds.add(q.id);
-      else if(prev!==fp) updIds.add(q.id);
+      const fp=`${q.mag}|${q.depth}|${q.place}`;
+      next[q.id]=fp;
+      const p=prevState[q.id];
+      if(p===undefined) newIds.add(q.id);
+      else if(p!==fp) updIds.add(q.id);
     }
-    prevState = nextState;
-    quakes = json.quakes;
-
-    document.getElementById("lastFetch").textContent = "· "+fmtDate(new Date());
-    countdown = REFRESH_MS/1000;
-    hideError();
-    renderList();
-    renderStats();
-    setTimeout(()=>{ newIds=new Set(); updIds=new Set(); renderList(); }, 10000);
-    setLive(true);
+    prevState=next; quakes=json.quakes;
+    document.getElementById("sourceLabel").textContent = "📡 "+(json.source||"USGS");
+    document.getElementById("lastFetch").textContent = "· "+fmt(new Date());
+    cd=REFRESH_MS/1000;
+    hideErr(); renderList(); renderStats(); updateTopStats();
+    setTimeout(()=>{ newIds=new Set(); updIds=new Set(); renderList(); },10000);
+    setLoading(false, true);
   } catch(e) {
-    showError(e.message);
-    setLive(false);
+    showErr(e.message);
+    setLoading(false, false);
   } finally {
-    document.getElementById("refreshBtn").disabled = false;
+    document.getElementById("refreshBtn").disabled=false;
   }
 }
 
-function setLive(on) {
-  document.getElementById("liveDot").style.background = on ? "#22c55e" : "#f97316";
-  document.getElementById("liveDot").style.boxShadow = on ? "0 0 6px #22c55e" : "0 0 6px #f97316";
-  document.getElementById("liveText").textContent = on ? "Canlı" : "Güncelleniyor…";
+function setLoading(on, ok) {
+  const dot=document.getElementById("liveDot");
+  const txt=document.getElementById("liveText");
+  if(on) { dot.className="live-dot loading"; txt.textContent="Güncelleniyor"; }
+  else if(ok) { dot.className="live-dot"; txt.textContent="Canlı"; }
+  else { dot.className="live-dot loading"; txt.textContent="Hata"; }
 }
 
-function showError(msg) {
-  document.getElementById("errorMsg").textContent = "⚠️ "+msg;
-  document.getElementById("errorBox").style.display = "flex";
-}
-function hideError() {
-  document.getElementById("errorBox").style.display = "none";
-}
+function showErr(m) { document.getElementById("errMsg").textContent="⚠️ "+m; document.getElementById("errBox").style.display="flex"; }
+function hideErr() { document.getElementById("errBox").style.display="none"; }
 
-function setMag(v, btn) {
-  minMag = v;
-  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+function setMag(v,btn) {
+  minMag=v;
+  document.querySelectorAll(".filt").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
   renderList();
 }
 
+function updateTopStats() {
+  if(!quakes.length) return;
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById("sTotal").textContent=quakes.length;
+  document.getElementById("sToday").textContent=quakes.filter(q=>q.time.startsWith(today)).length;
+  document.getElementById("sMax").textContent="M"+Math.max(...quakes.map(q=>q.mag)).toFixed(1);
+  document.getElementById("sM4").textContent=quakes.filter(q=>q.mag>=4).length;
+}
+
 function renderList() {
-  const filtered = quakes.filter(q=>q.mag>=minMag);
-  document.getElementById("countLabel").textContent = filtered.length+" kayıt";
-  const loading = document.getElementById("loading");
-  const list = document.getElementById("list");
-  if(quakes.length===0) { loading.style.display="block"; list.style.display="none"; return; }
-  loading.style.display="none"; list.style.display="flex";
-  list.innerHTML = filtered.map(q => {
-    const c = MAG_COLOR(q.mag);
-    const isNew = newIds.has(q.id);
-    const isUpd = updIds.has(q.id);
-    const isOpen = openId===q.id;
-    const cls = isNew?"new":isUpd?"updated":isOpen?"open":"";
-    return `<div class="card ${cls}" onclick="toggleCard('${q.id}')">
-      ${isNew?'<span class="badge-new">YENİ</span>':""}
-      ${isUpd?'<span class="badge-upd">GÜNCELLENDİ</span>':""}
-      <div class="mag-box" style="background:${c.bg}">
-        <span class="mag-val" style="color:${c.tx}">M${q.mag.toFixed(1)}</span>
-        <span class="mag-type" style="color:${c.tx}">${q.magType}</span>
+  const f=quakes.filter(q=>q.mag>=minMag);
+  document.getElementById("cntLbl").textContent=f.length+" kayıt";
+  const lb=document.getElementById("loadingBox");
+  const ls=document.getElementById("list");
+  if(!quakes.length){ lb.style.display="block"; ls.style.display="none"; return; }
+  lb.style.display="none"; ls.style.display="flex";
+  ls.innerHTML=f.map(q=>{
+    const c=MC(q.mag), isN=newIds.has(q.id), isU=updIds.has(q.id), isO=openId===q.id;
+    const cls=isN?"new-q":isU?"upd-q":isO?"open-q":"";
+    return `<div class="card ${cls}" onclick="toggle('${q.id}')">
+      ${isN?'<span class="tag tag-new">YENİ</span>':""}
+      ${isU?'<span class="tag tag-upd">GÜNCELLENDİ</span>':""}
+      <div class="card-inner">
+        <div class="mag-badge" style="background:${c.bg}">
+          <span class="mag-num" style="color:${c.tx}">M${q.mag.toFixed(1)}</span>
+          <span class="mag-type-lbl" style="color:${c.tx}">${q.magType}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-place">${q.place}</div>
+          <div class="card-time">${fmt(q.time)} · ${ago(q.time)} önce</div>
+        </div>
+        <div class="card-dot" style="background:${c.dot}"></div>
       </div>
-      <div class="card-info">
-        <div class="card-place">${q.place}</div>
-        <div class="card-time">${fmtDate(q.time)} · ${timeAgo(q.time)}</div>
-        ${isOpen?`<div class="card-detail">
-          <span>🕳️ Derinlik: <b style="color:#e2e8f0">${q.depth} km</b></span>
-          <span>📏 Tür: <b style="color:#e2e8f0">${q.magType}</b></span>
-          <span>🌐 Enlem: <b style="color:#e2e8f0">${q.lat}</b></span>
-          <span>🌐 Boylam: <b style="color:#e2e8f0">${q.lon}</b></span>
-        </div>`:""}
-      </div>
-      <div class="card-dot" style="background:${c.dot}"></div>
+      ${isO?`<div class="card-detail">
+        <span>🕳️ Derinlik: <b>${q.depth} km</b></span>
+        <span>📏 Tür: <b>${q.magType}</b></span>
+        <span>🌐 Enlem: <b>${q.lat}</b></span>
+        <span>🌐 Boylam: <b>${q.lon}</b></span>
+      </div>`:""}
     </div>`;
   }).join("");
 }
 
-function toggleCard(id) {
-  openId = openId===id ? null : id;
-  renderList();
-}
+function toggle(id){ openId=openId===id?null:id; renderList(); }
 
 function renderStats() {
   if(!quakes.length) return;
-  const total = quakes.length;
-  const today = quakes.filter(q=>q.time.startsWith(new Date().toISOString().slice(0,10))).length;
-  const max = Math.max(...quakes.map(q=>q.mag)).toFixed(1);
-  const avg = (quakes.reduce((s,q)=>s+q.mag,0)/total).toFixed(1);
-  const m3 = quakes.filter(q=>q.mag>=3).length;
-  const m4 = quakes.filter(q=>q.mag>=4).length;
-  document.getElementById("statsGrid").innerHTML = [
-    {icon:"📊",val:total,label:"Toplam (7 gün)"},
-    {icon:"📅",val:today,label:"Bugün"},
-    {icon:"💥",val:"M"+max,label:"En Büyük"},
-    {icon:"📈",val:"M"+avg,label:"Ortalama"},
-    {icon:"🔵",val:m3,label:"M≥3"},
-    {icon:"⚠️",val:m4,label:"M≥4"},
+  const tot=quakes.length, today=new Date().toISOString().slice(0,10);
+  const max=Math.max(...quakes.map(q=>q.mag)).toFixed(1);
+  const avg=(quakes.reduce((s,q)=>s+q.mag,0)/tot).toFixed(1);
+  document.getElementById("statsGrid").innerHTML=[
+    {i:"📊",v:tot,l:"Toplam (500)"},
+    {i:"📅",v:quakes.filter(q=>q.time.startsWith(today)).length,l:"Bugün"},
+    {i:"💥",v:"M"+max,l:"En Büyük"},
+    {i:"📈",v:"M"+avg,l:"Ortalama"},
+    {i:"🔵",v:quakes.filter(q=>q.mag>=3).length,l:"M≥3"},
+    {i:"⚠️",v:quakes.filter(q=>q.mag>=4).length,l:"M≥4"},
   ].map(s=>`<div class="stat-card">
-    <div class="stat-icon">${s.icon}</div>
-    <div class="stat-val">${s.val}</div>
-    <div class="stat-label">${s.label}</div>
+    <div class="stat-card-icon">${s.i}</div>
+    <div class="stat-card-val">${s.v}</div>
+    <div class="stat-card-lbl">${s.l}</div>
   </div>`).join("");
-  const bars = [
-    {label:"M 5+", count:quakes.filter(q=>q.mag>=5).length, color:"#ef4444"},
-    {label:"M 4–5",count:quakes.filter(q=>q.mag>=4&&q.mag<5).length,color:"#f97316"},
-    {label:"M 3–4",count:quakes.filter(q=>q.mag>=3&&q.mag<4).length,color:"#eab308"},
-    {label:"M 2–3",count:quakes.filter(q=>q.mag>=2&&q.mag<3).length,color:"#3b82f6"},
-    {label:"M 1–2",count:quakes.filter(q=>q.mag>=1&&q.mag<2).length,color:"#22c55e"},
+  const bars=[
+    {l:"M 5+",c:quakes.filter(q=>q.mag>=5).length,col:"#f85149"},
+    {l:"M 4–5",c:quakes.filter(q=>q.mag>=4&&q.mag<5).length,col:"#f97316"},
+    {l:"M 3–4",c:quakes.filter(q=>q.mag>=3&&q.mag<4).length,col:"#f0c040"},
+    {l:"M 2–3",c:quakes.filter(q=>q.mag>=2&&q.mag<3).length,col:"#3b82f6"},
+    {l:"M 1–2",c:quakes.filter(q=>q.mag>=1&&q.mag<2).length,col:"#22c55e"},
+    {l:"M < 1",c:quakes.filter(q=>q.mag<1).length,col:"#a855f7"},
   ];
-  document.getElementById("barChart").innerHTML = `<div style="font-size:13px;font-weight:700;color:#94a3b8;margin-bottom:12px">Büyüklük Dağılımı</div>`+
+  document.getElementById("chartBox").innerHTML=`<div class="chart-title">Büyüklük Dağılımı</div>`+
     bars.map(b=>{
-      const pct = Math.round(b.count/total*100);
+      const p=Math.round(b.c/tot*100);
       return `<div class="bar-row">
-        <div class="bar-labels"><span style="color:#94a3b8">${b.label}</span><span style="color:#e2e8f0">${b.count} (%${pct})</span></div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${b.color}"></div></div>
+        <div class="bar-meta"><span style="color:var(--muted)">${b.l}</span><span>${b.c} (%${p})</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${b.col}"></div></div>
       </div>`;
     }).join("");
 }
 
-function switchTab(i) {
-  document.querySelectorAll(".tab").forEach((t,j)=>t.classList.toggle("active",i===j));
-  document.querySelectorAll(".tab-content").forEach((t,j)=>t.classList.toggle("active",i===j));
+function switchTab(i,btn) {
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("tab"+i).classList.add("active");
 }
 
-function refresh() {
-  countdown = REFRESH_MS/1000;
+function doRefresh() {
+  cd=REFRESH_MS/1000;
   clearInterval(timer);
-  timer = setInterval(fetchData, REFRESH_MS);
+  timer=setInterval(fetchData,REFRESH_MS);
   fetchData();
 }
 
 // Countdown
-cdTimer = setInterval(()=>{
-  countdown = Math.max(0, countdown-1);
-  document.getElementById("countdown").textContent = countdown>0 ? "· "+countdown+"sn" : "";
-}, 1000);
+cdTimer=setInterval(()=>{
+  cd=Math.max(0,cd-1);
+  document.getElementById("cdLabel").textContent=cd>0?"· "+cd+"sn":"";
+},1000);
 
-// Başlat
+// Render uyanık tut — her 14 dakikada ping at
+setInterval(()=>fetch(BACKEND+"/health").catch(()=>{}), 14*60*1000);
+
 fetchData();
-timer = setInterval(fetchData, REFRESH_MS);
+timer=setInterval(fetchData,REFRESH_MS);
 </script>
 </body>
 </html>
