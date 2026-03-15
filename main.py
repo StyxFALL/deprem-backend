@@ -11,7 +11,7 @@ from collections import defaultdict
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_API   = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key={GEMINI_API_KEY}"
+GEMINI_URL     = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
 RENDER_URL     = "https://deprem-backend-kvmk.onrender.com"
 
 SISTEM_PROMPT = """Sen bir deprem ve doğal afet uzmanısın. Türkiye'nin jeolojik yapısını, 
@@ -103,11 +103,24 @@ async def yanit_uret(chat_id: int, metin: str):
         try:
             async with httpx.AsyncClient(timeout=15) as client:
                 r = await client.get(f"{RENDER_URL}/kandilli")
-                quakes = r.json().get("quakes", [])[:5]
-            lines = ["🔍 *Son 5 Deprem (Kandilli)*\n"]
+                quakes = r.json().get("quakes", [])[:10]
+            lines = ["🔍 *SON 10 DEPREM*\n_Kaynak: Kandilli Rasathanesi_\n"]
             for q in quakes:
+                mag = q["mag"]
+                if mag >= 4.0:
+                    renk = "🔴"
+                elif mag >= 3.0:
+                    renk = "🟡"
+                else:
+                    renk = "🟢"
                 zaman = q["time"].replace("T", " ")
-                lines.append(f"• {q['mag']} {q['magType']} — {q['place']}\n  🕐 {zaman} | 🔻 {q['depth']} km")
+                tarih = zaman[5:16]  # "03-15 18:00"
+                lines.append(
+                    f"━━━━━━━━━━━━━━━\n"
+                    f"{renk} *{mag} {q['magType']}* — {q['place']}\n"
+                    f"📅 {tarih}  |  🔻 {q['depth']} km"
+                )
+            lines.append("━━━━━━━━━━━━━━━")
             yanit = "\n".join(lines)
         except:
             yanit = "⚠️ Deprem verisi alınamadı, lütfen tekrar deneyin."
@@ -195,6 +208,15 @@ async def telegram_dinle():
 # ── DEPREM ALARMCISI ──────────────────────────────────────────────────────────
 son_kontrol_zamani = ""
 
+async def uyku_onleyici():
+    while True:
+        try:
+            async with httpx.AsyncClient(timeout=10) as client:
+                await client.get(f"{RENDER_URL}/health")
+        except:
+            pass
+        await asyncio.sleep(600)
+
 async def deprem_alarmcisi():
     global son_kontrol_zamani
     while True:
@@ -248,6 +270,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET"], a
 async def startup():
     asyncio.create_task(telegram_dinle())
     asyncio.create_task(deprem_alarmcisi())
+    asyncio.create_task(uyku_onleyici())
 
 # ── KANDİLLİ ─────────────────────────────────────────────────────────────────
 def parse_kandilli(html):
