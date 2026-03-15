@@ -1,10 +1,21 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
-import httpx, re
+import httpx, re, asyncio
+
+from whatsapp_bot import router as whatsapp_router, deprem_alarmcisi
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET"], allow_headers=["*"])
+
+app.include_router(whatsapp_router)
+
+@app.on_event("startup")
+async def startup():
+    asyncio.create_task(deprem_alarmcisi())
 
 # ── KANDİLLİ (direkt parse — çalışan versiyon) ───────────────────────────────
 def parse_kandilli(html):
