@@ -7,11 +7,12 @@ from datetime import datetime, timedelta
 import httpx, re, asyncio, os
 from collections import defaultdict
 
-# ── TELEGRAM ──────────────────────────────────────────────────────────────────
+# ── AYARLAR ───────────────────────────────────────────────────────────────────
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_API   = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_URL     = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+RENDER_URL     = "https://deprem-backend-kvmk.onrender.com"
 
 SISTEM_PROMPT = """Sen bir deprem ve doğal afet uzmanısın. Türkiye'nin jeolojik yapısını, 
 fay hatlarını ve deprem tarihini çok iyi biliyorsun. Kullanıcılara:
@@ -23,6 +24,26 @@ fay hatlarını ve deprem tarihini çok iyi biliyorsun. Kullanıcılara:
 Sadece deprem, afet, jeoloji ve güvenlik konularında yardımcı ol. 
 Konu dışı sorularda kibarca konuya yönlendir."""
 
+# Abone listesi
+aboneler: dict[int, dict] = {}
+
+# Küme tespiti için bölge geçmişi
+bolge_gecmis: dict[str, list] = defaultdict(list)
+
+# ── TELEGRAM ──────────────────────────────────────────────────────────────────
+async def telegram_gonder(chat_id: int, metin: str):
+    async with httpx.AsyncClient(timeout=10) as client:
+        await client.post(f"{TELEGRAM_API}/sendMessage", json={
+            "chat_id": chat_id,
+            "text": metin,
+            "parse_mode": "Markdown"
+        })
+
+async def telegram_herkese_gonder(metin: str):
+    for chat_id in list(aboneler.keys()):
+        await telegram_gonder(chat_id, metin)
+
+# ── GEMİNİ ────────────────────────────────────────────────────────────────────
 async def gemini_sor(soru: str) -> str:
     try:
         async with httpx.AsyncClient(timeout=20) as client:
@@ -36,26 +57,10 @@ async def gemini_sor(soru: str) -> str:
             data = r.json()
             return data["candidates"][0]["content"]["parts"][0]["text"]
     except Exception as e:
+        print(f"[Gemini hata]: {e}")
         return "⚠️ Şu an yanıt veremiyorum, lütfen tekrar deneyin."
 
-# Abone listesi: {chat_id: {"sehir": "İstanbul" veya None, "min_mag": 3.5}}
-aboneler: dict[int, dict] = {}
-
-# Son 1 saatteki depremler bölgeye göre: {"İzmir": [deprem1, deprem2, ...]}
-bolge_gecmis: dict[str, list] = defaultdict(list)
-
-async def telegram_gonder(chat_id: int, metin: str):
-    async with httpx.AsyncClient(timeout=10) as client:
-        await client.post(f"{TELEGRAM_API}/sendMessage", json={
-            "chat_id": chat_id,
-            "text": metin,
-            "parse_mode": "Markdown"
-        })
-
-async def telegram_herkese_gonder(metin: str):
-    for chat_id in list(aboneler.keys()):
-        await telegram_gonder(chat_id, metin)
-
+# ── BİLDİRİM METİNLERİ ───────────────────────────────────────────────────────
 def bildirim_metni(q: dict) -> str:
     zaman = q.get("time", "").replace("T", " ")
     return (
@@ -77,6 +82,7 @@ def kume_uyari_metni(bolge: str, depremler: list) -> str:
         f"📞 Acil: 112"
     )
 
+# ── KOMUT İŞLEYİCİ ───────────────────────────────────────────────────────────
 async def yanit_uret(chat_id: int, metin: str):
     m = metin.strip().lower()
 
@@ -89,13 +95,14 @@ async def yanit_uret(chat_id: int, metin: str):
             "📍 /konum İstanbul — Şehir filtresi\n"
             "⚙️ /esik 3.5 — Büyüklük eşiği ayarla\n"
             "🔕 /iptal — Bildirimleri durdur\n"
-            "📋 /nehyapmali — Deprem güvenlik rehberi"
+            "📋 /nehyapmali — Deprem güvenlik rehberi\n\n"
+            "💬 Veya deprem hakkında herhangi bir soru sorabilirsiniz!"
         )
 
     elif m == "/sondeprem":
         try:
             async with httpx.AsyncClient(timeout=15) as client:
-                r = await client.get("http://localhost:8000/kandilli")
+                r = await client.get(f"{RENDER_URL}/kandilli")
                 quakes = r.json().get("quakes", [])[:5]
             lines = ["🔍 *Son 5 Deprem (Kandilli)*\n"]
             for q in quakes:
@@ -168,10 +175,10 @@ async def telegram_dinle():
     global son_update_id
     while True:
         try:
-            async with httpx.AsyncClient(timeout=30) as client:
+            async with httpx.AsyncClient(timeout=35) as client:
                 r = await client.get(f"{TELEGRAM_API}/getUpdates", params={
                     "offset": son_update_id + 1,
-                    "timeout": 20
+                    "timeout": 30
                 })
                 updates = r.json().get("result", [])
                 for update in updates:
@@ -193,7 +200,7 @@ async def deprem_alarmcisi():
     while True:
         try:
             async with httpx.AsyncClient(timeout=15) as client:
-                r = await client.get("http://localhost:8000/kandilli")
+                r = await client.get(f"{RENDER_URL}/kandilli")
                 quakes = r.json().get("quakes", [])
 
             if quakes:
@@ -206,21 +213,17 @@ async def deprem_alarmcisi():
                         mag   = q.get("mag", 0)
                         place = q.get("place", "")
 
-                        # ── Küme tespiti ──
-                        bolge_gecmis[place].append({
-                            "time": q["time"], "mag": mag
-                        })
-                        # 1 saatten eski kayıtları temizle
+                        # Küme tespiti
+                        bolge_gecmis[place].append({"time": q["time"], "mag": mag})
                         bir_saat_once = (datetime.utcnow() - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S")
                         bolge_gecmis[place] = [
                             d for d in bolge_gecmis[place] if d["time"] > bir_saat_once
                         ]
-                        # Aynı bölgede 1 saatte 5+ küçük deprem → küme uyarısı
                         kucukler = [d for d in bolge_gecmis[place] if d["mag"] < 3.5]
-                        if len(kucukler) == 5:  # tam 5 olduğunda 1 kez uyar
+                        if len(kucukler) == 5:
                             await telegram_herkese_gonder(kume_uyari_metni(place, kucukler))
 
-                        # ── Normal bildirim ──
+                        # Normal bildirim
                         metin = bildirim_metni(q)
                         for chat_id, ayarlar in list(aboneler.items()):
                             if mag < ayarlar.get("min_mag", 3.5):
