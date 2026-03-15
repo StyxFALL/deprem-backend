@@ -6,7 +6,48 @@ import httpx, re
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET"], allow_headers=["*"])
 
-# ── KANDİLLİ ──────────────────────────────────────────────────────────────────
+# ── ORHAN AYDOĞDU API (Kandilli + AFAD) ────────────────────────────────────
+BASE = "https://api.orhanaydogdu.com.tr/deprem"
+
+def normalize(q, provider):
+    try:
+        mag = float(q.get("mag") or q.get("magnitude") or 0)
+        lat = float(q.get("lat") or q.get("latitude") or q.get("geojson", {}).get("coordinates", [0,0])[1] or 0)
+        lon = float(q.get("lon") or q.get("longitude") or q.get("geojson", {}).get("coordinates", [0,0])[0] or 0)
+        return {
+            "id":      str(q.get("earthquake_id") or q.get("id", "")),
+            "time":    q.get("date_time") or q.get("date") or "",
+            "lat":     lat,
+            "lon":     lon,
+            "depth":   float(q.get("depth") or 0),
+            "mag":     mag,
+            "magType": "ML",
+            "place":   q.get("title") or q.get("location") or "",
+        }
+    except:
+        return None
+
+async def fetch_orhanaydogdu(provider="kandilli", days=30):
+    end = datetime.utcnow()
+    start = end - timedelta(days=days)
+    url = f"{BASE}/{provider}/archive"
+    params = {
+        "date": start.strftime("%Y-%m-%d"),
+        "date_end": end.strftime("%Y-%m-%d"),
+        "limit": 2000
+    }
+    async with httpx.AsyncClient(timeout=30) as client:
+        r = await client.get(url, params=params, headers={"User-Agent": "Mozilla/5.0"})
+        r.raise_for_status()
+    j = r.json()
+    if not j.get("status"):
+        raise Exception(j.get("serverMessage", "API hatası"))
+    items = j.get("result", [])
+    quakes = [normalize(q, provider) for q in items]
+    quakes = [q for q in quakes if q]
+    return sorted(quakes, key=lambda q: q["time"], reverse=True)
+
+# ── KANDİLLİ YEDEK (parse) ──────────────────────────────────────────────────
 def parse_kandilli(html):
     quakes, seen = [], set()
     pat = re.compile(
@@ -28,24 +69,18 @@ def parse_kandilli(html):
         if qid in seen: continue
         seen.add(qid)
         quakes.append({
-            "id":      qid,
-            "time":    f"{m.group(1).replace('.', '-')}T{m.group(2)}",
-            "lat":     float(m.group(3)),
-            "lon":     float(m.group(4)),
-            "depth":   float(m.group(5)),
-            "mag":     mag,
-            "magType": mag_type,
-            "place":   m.group(9).strip(),
+            "id": qid,
+            "time": f"{m.group(1).replace('.', '-')}T{m.group(2)}",
+            "lat": float(m.group(3)), "lon": float(m.group(4)),
+            "depth": float(m.group(5)), "mag": mag,
+            "magType": mag_type, "place": m.group(9).strip(),
         })
     return sorted(quakes, key=lambda q: q["time"], reverse=True)
 
-async def get_kandilli():
-    urls = [
-        "http://www.koeri.boun.edu.tr/scripts/lst6.asp",
-        "http://www.koeri.boun.edu.tr/scripts/lst5.asp",
-    ]
+async def fetch_kandilli_raw():
     async with httpx.AsyncClient(timeout=30, follow_redirects=True) as client:
-        for url in urls:
+        for url in ["http://www.koeri.boun.edu.tr/scripts/lst6.asp",
+                    "http://www.koeri.boun.edu.tr/scripts/lst5.asp"]:
             try:
                 r = await client.get(url, headers={"User-Agent": "Mozilla/5.0"})
                 if r.status_code == 200:
@@ -54,67 +89,32 @@ async def get_kandilli():
             except: continue
     return []
 
-# ── AFAD ──────────────────────────────────────────────────────────────────────
-async def get_afad(days=30):
-    end = datetime.utcnow()
-    start = end - timedelta(days=days)
-    payload = {
-        "EventSearchFilterList": [
-            {"FilterType": 8, "Value": start.strftime("%Y-%m-%dT%H:%M:%S")},
-            {"FilterType": 9, "Value": end.strftime("%Y-%m-%dT%H:%M:%S")},
-        ],
-        "Skip": 0, "Take": 10000,
-        "SortDescriptor": {"field": "eventDate", "dir": "desc"}
-    }
-    async with httpx.AsyncClient(timeout=30) as client:
-        r = await client.post(
-            "https://deprem.afad.gov.tr/EventData/GetEventsByFilter",
-            json=payload,
-            headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}
-        )
-        r.raise_for_status()
-    raw = r.json()
-    items = raw if isinstance(raw, list) else raw.get("eventList", raw.get("result", []))
-    if not items: return []
-    quakes = []
-    for q in items:
-        try:
-            mag = float(q.get("magnitude") or q.get("ml") or q.get("mag") or 0)
-            quakes.append({
-                "id":      str(q.get("eventID") or q.get("id", "")),
-                "time":    (q.get("eventDate") or q.get("date", "")).replace("Z", ""),
-                "lat":     float(q.get("latitude") or q.get("lat", 0)),
-                "lon":     float(q.get("longitude") or q.get("lon", 0)),
-                "depth":   float(q.get("depth", 0)),
-                "mag":     mag,
-                "magType": q.get("magnitudeType", "ML"),
-                "place":   q.get("location") or q.get("place", ""),
-            })
-        except: pass
-    return sorted(quakes, key=lambda q: q["time"], reverse=True)
-
-# ── ENDPOINTLEr ───────────────────────────────────────────────────────────────
+# ── ENDPOINTLEr ──────────────────────────────────────────────────────────────
 @app.get("/kandilli")
 async def kandilli():
-    data = await get_kandilli()
+    try:
+        data = await fetch_orhanaydogdu("kandilli", 30)
+        if data: return {"count": len(data), "source": "Kandilli", "quakes": data}
+    except: pass
+    # Yedek: direkt parse
+    data = await fetch_kandilli_raw()
     return {"count": len(data), "source": "Kandilli", "quakes": data}
 
 @app.get("/afad")
 async def afad():
     try:
-        data = await get_afad(30)
+        data = await fetch_orhanaydogdu("afad", 30)
         return {"count": len(data), "source": "AFAD", "quakes": data}
     except Exception as e:
         return {"count": 0, "source": "AFAD", "quakes": [], "error": str(e)}
 
 @app.get("/depremler")
 async def depremler():
-    # Geriye dönük uyumluluk — önce AFAD, sonra Kandilli
     try:
-        data = await get_afad(30)
-        if data: return {"count": len(data), "source": "AFAD", "quakes": data}
+        data = await fetch_orhanaydogdu("kandilli", 30)
+        if data: return {"count": len(data), "source": "Kandilli", "quakes": data}
     except: pass
-    data = await get_kandilli()
+    data = await fetch_kandilli_raw()
     return {"count": len(data), "source": "Kandilli", "quakes": data}
 
 @app.get("/health")
