@@ -67,7 +67,10 @@ if not candidates:
 blocked = data.get(“promptFeedback”, {}).get(“blockReason”, “”)
 print(f”[Gemini engel]: {blocked} | tam yanıt: {data}”)
 return “⚠️ Bu soruya yanıt veremiyorum. Depremle ilgili başka bir soru sorabilirsiniz.”
-return candidates[0][“content”][“parts”][0][“text”]
+candidate = data.get("candidates", [{}])[0]
+parts = candidate.get("content", {}).get("parts", [])
+metin = " ".join(p.get("text", "") for p in parts if "text" in p)
+return metin or "⚠️ Yanıt alınamadı."
 except Exception as e:
 print(f”[Gemini hata]: {e}”)
 return “⚠️ Şu an yanıt veremiyorum, lütfen tekrar deneyin.”
