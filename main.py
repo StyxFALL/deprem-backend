@@ -24,10 +24,7 @@ fay hatlarını ve deprem tarihini çok iyi biliyorsun. Kullanıcılara:
 Sadece deprem, afet, jeoloji ve güvenlik konularında yardımcı ol. 
 Konu dışı sorularda kibarca konuya yönlendir."""
 
-# Abone listesi
 aboneler: dict[int, dict] = {}
-
-# Küme tespiti için bölge geçmişi
 bolge_gecmis: dict[str, list] = defaultdict(list)
 
 # ── TELEGRAM ──────────────────────────────────────────────────────────────────
@@ -54,11 +51,20 @@ async def gemini_sor(soru: str) -> str:
                     {"role": "user", "parts": [{"text": soru}]}
                 ]
             })
-            data = r.json()
-            return data["candidates"][0]["content"]["parts"][0]["text"]
+        data = r.json()
+        print(f"[Gemini yanit]: {data}")
+        candidates = data.get("candidates", [])
+        if not candidates:
+            blocked = data.get("promptFeedback", {}).get("blockReason", "")
+            print(f"[Gemini engel]: {blocked}")
+            return "Bu soruya yanıt veremiyorum. Depremle ilgili başka bir soru sorabilirsiniz."
+        candidate = candidates[0]
+        parts = candidate.get("content", {}).get("parts", [])
+        metin = " ".join(p.get("text", "") for p in parts if "text" in p)
+        return metin or "Yanıt alınamadı."
     except Exception as e:
         print(f"[Gemini hata]: {e}")
-        return "⚠️ Şu an yanıt veremiyorum, lütfen tekrar deneyin."
+        return "Şu an yanıt veremiyorum, lütfen tekrar deneyin."
 
 # ── BİLDİRİM METİNLERİ ───────────────────────────────────────────────────────
 def bildirim_metni(q: dict) -> str:
@@ -90,7 +96,7 @@ async def yanit_uret(chat_id: int, metin: str):
         yanit = (
             "👋 *Deprem Bot'a Hoş Geldiniz!*\n\n"
             "📋 Komutlar:\n\n"
-            "🔍 /sondeprem — Son 5 depremi gör\n"
+            "🔍 /sondeprem — Son 10 depremi gör\n"
             "🔔 /abone — Otomatik bildirim al\n"
             "📍 /konum İstanbul — Şehir filtresi\n"
             "⚙️ /esik 3.5 — Büyüklük eşiği ayarla\n"
@@ -114,7 +120,7 @@ async def yanit_uret(chat_id: int, metin: str):
                 else:
                     renk = "🟢"
                 zaman = q["time"].replace("T", " ")
-                tarih = zaman[5:16]  # "03-15 18:00"
+                tarih = zaman[5:16]
                 lines.append(
                     f"━━━━━━━━━━━━━━━\n"
                     f"{renk} *{mag} {q['magType']}* — {q['place']}\n"
@@ -175,7 +181,6 @@ async def yanit_uret(chat_id: int, metin: str):
         )
 
     else:
-        # Komut değilse Gemini'ye sor
         await telegram_gonder(chat_id, "🤔 Araştırıyorum...")
         yanit = await gemini_sor(metin)
 
@@ -205,9 +210,7 @@ async def telegram_dinle():
             print(f"[Telegram hata]: {e}")
             await asyncio.sleep(5)
 
-# ── DEPREM ALARMCISI ──────────────────────────────────────────────────────────
-son_kontrol_zamani = ""
-
+# ── UYKU ÖNLEYİCİ ────────────────────────────────────────────────────────────
 async def uyku_onleyici():
     while True:
         try:
@@ -216,6 +219,9 @@ async def uyku_onleyici():
         except:
             pass
         await asyncio.sleep(600)
+
+# ── DEPREM ALARMCISI ──────────────────────────────────────────────────────────
+son_kontrol_zamani = ""
 
 async def deprem_alarmcisi():
     global son_kontrol_zamani
@@ -227,15 +233,11 @@ async def deprem_alarmcisi():
 
             if quakes:
                 en_yeni = quakes[0]["time"]
-
                 if son_kontrol_zamani and en_yeni > son_kontrol_zamani:
                     yeniler = [q for q in quakes if q["time"] > son_kontrol_zamani]
-
                     for q in yeniler:
                         mag   = q.get("mag", 0)
                         place = q.get("place", "")
-
-                        # Küme tespiti
                         bolge_gecmis[place].append({"time": q["time"], "mag": mag})
                         bir_saat_once = (datetime.utcnow() - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S")
                         bolge_gecmis[place] = [
@@ -244,8 +246,6 @@ async def deprem_alarmcisi():
                         kucukler = [d for d in bolge_gecmis[place] if d["mag"] < 3.5]
                         if len(kucukler) == 5:
                             await telegram_herkese_gonder(kume_uyari_metni(place, kucukler))
-
-                        # Normal bildirim
                         metin = bildirim_metni(q)
                         for chat_id, ayarlar in list(aboneler.items()):
                             if mag < ayarlar.get("min_mag", 3.5):
@@ -254,12 +254,9 @@ async def deprem_alarmcisi():
                             if sehir and sehir.lower() not in place.lower():
                                 continue
                             await telegram_gonder(chat_id, metin)
-
                 son_kontrol_zamani = en_yeni
-
         except Exception as e:
             print(f"[Alarmcı hata]: {e}")
-
         await asyncio.sleep(60)
 
 # ── FASTAPI ───────────────────────────────────────────────────────────────────
