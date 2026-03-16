@@ -96,7 +96,13 @@ async def yanit_uret(chat_id: int, metin: str):
         yanit = (
             "👋 *Deprem Bot'a Hoş Geldiniz!*\n\n"
             "📋 Komutlar:\n\n"
-            "🔍 /sondeprem — Son 10 depremi gör\n"
+            "🔍 /sondeprem — Son 10 deprem + uzman yorumu\n"
+            "📊 /analiz — Son 24 saatin deprem analizi\n"
+            "📈 /istatistik — Deprem istatistikleri\n"
+            "🌍 /dunya — Dünya geneli büyük depremler\n"
+            "🗺 /risk — Türkiye deprem risk haritası\n"
+            "🎒 /canta — Deprem çantası rehberi\n"
+            "📍 /toplanma İstanbul — Toplanma alanları\n"
             "🔔 /abone — Otomatik bildirim al\n"
             "📍 /konum İstanbul — Şehir filtresi\n"
             "⚙️ /esik 3.5 — Büyüklük eşiği ayarla\n"
@@ -127,9 +133,144 @@ async def yanit_uret(chat_id: int, metin: str):
                     f"📅 {tarih}  |  🔻 {q['depth']} km"
                 )
             lines.append("━━━━━━━━━━━━━━━")
-            yanit = "\n".join(lines)
+            await telegram_gonder(chat_id, "\n".join(lines))
+            # Gemini yorumu
+            await telegram_gonder(chat_id, "🤔 Uzman yorumu hazırlanıyor...")
+            deprem_listesi = "\n".join([
+                f"- {q['mag']} {q['magType']}, {q['place']}, derinlik {q['depth']} km, zaman {q['time']}"
+                for q in quakes
+            ])
+            yorum = await gemini_sor(
+                f"Aşağıdaki son depremleri bir deprem uzmanı olarak kısaca yorumla. "
+                f"Dikkat çeken bir durum var mı, hangi bölgeler aktif, risk var mı? "
+                f"Kısa ve anlaşılır yaz:\n\n{deprem_listesi}"
+            )
+            yanit = f"🤖 *Uzman Yorumu:*\n\n{yorum}"
         except:
             yanit = "⚠️ Deprem verisi alınamadı, lütfen tekrar deneyin."
+
+    elif m == "/canta":
+        yanit = (
+            "🎒 *DEPREM ÇANTASI HAZIRLIK REHBERİ*\n\n"
+            "Deprem çantanızda bulunması gerekenler:\n\n"
+            "💧 *Su ve Gıda:*\n"
+            "• 3 günlük su (kişi başı 3L/gün)\n"
+            "• Konserve ve uzun ömürlü gıdalar\n"
+            "• Bebek maması (gerekiyorsa)\n\n"
+            "🏥 *Sağlık:*\n"
+            "• İlk yardım kiti\n"
+            "• Düzenli kullanılan ilaçlar (7 günlük)\n"
+            "• Maske ve eldiven\n\n"
+            "📄 *Belgeler:*\n"
+            "• Kimlik fotokopisi\n"
+            "• Sigorta belgeleri\n"
+            "• Acil iletişim listesi\n\n"
+            "🔦 *Ekipman:*\n"
+            "• El feneri + yedek pil\n"
+            "• Düdük\n"
+            "• Battaniye\n"
+            "• Powerbank\n"
+            "• Nakit para\n\n"
+            "⚠️ Çantanızı her 6 ayda bir kontrol edin!"
+        )
+
+    elif m.startswith("/toplanma "):
+        sehir = metin.strip()[10:].strip().title()
+        await telegram_gonder(chat_id, f"📍 {sehir} için toplanma alanları araştırılıyor...")
+        yanit = await gemini_sor(
+            f"{sehir} ilinde deprem toplanma alanları nelerdir? "
+            f"Bilinen toplanma noktalarını, parkları ve açık alanları listele. "
+            f"AFAD tarafından belirlenen resmi toplanma alanları varsa belirt. Kısa ve net yaz."
+        )
+        yanit = f"📍 *{sehir.upper()} TOPLANMA ALANLARI*\n\n{yanit}"
+
+    elif m == "/dunya":
+        try:
+            async with httpx.AsyncClient(timeout=15) as client:
+                r = await client.get(
+                    "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson"
+                )
+                data = r.json()
+                quakes = data.get("features", [])[:8]
+            lines = ["🌍 *DÜNYA GENELİ SON BÜYÜK DEPREMLER*\n_Kaynak: USGS (4.5+)_\n"]
+            for q in quakes:
+                props = q.get("properties", {})
+                mag = props.get("mag", "?")
+                yer = props.get("place", "Bilinmiyor")
+                zaman = datetime.utcfromtimestamp(props.get("time", 0) / 1000).strftime("%m-%d %H:%M")
+                if mag >= 6.0:
+                    renk = "🔴"
+                elif mag >= 5.0:
+                    renk = "🟠"
+                else:
+                    renk = "🟡"
+                lines.append(f"━━━━━━━━━━━━━━━\n{renk} *{mag} Mw* — {yer}\n📅 {zaman} UTC")
+            lines.append("━━━━━━━━━━━━━━━")
+            yanit = "\n".join(lines)
+        except:
+            yanit = "⚠️ Dünya deprem verisi alınamadı, lütfen tekrar deneyin."
+
+    elif m == "/istatistik":
+        try:
+            async with httpx.AsyncClient(timeout=15) as client:
+                r = await client.get(f"{RENDER_URL}/kandilli")
+                quakes = r.json().get("quakes", [])
+            yirmi_dort_saat = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S")
+            yedi_gun = (datetime.utcnow() - timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%S")
+            son_24 = [q for q in quakes if q["time"] > yirmi_dort_saat]
+            son_7 = [q for q in quakes if q["time"] > yedi_gun]
+            # Bölge sayımı
+            from collections import Counter
+            bolgeler = Counter(q["place"].split("(")[-1].replace(")", "").strip() for q in son_7)
+            en_aktif = bolgeler.most_common(3)
+            en_buyuk = max(son_7, key=lambda q: q["mag"]) if son_7 else None
+            lines = [
+                "📊 *DEPREM İSTATİSTİKLERİ*\n",
+                f"🕐 Son 24 saat: *{len(son_24)} deprem*",
+                f"📅 Son 7 gün: *{len(son_7)} deprem*",
+            ]
+            if en_buyuk:
+                lines.append(f"💥 Bu haftanın en büyüğü: *{en_buyuk['mag']} {en_buyuk['magType']}* — {en_buyuk['place']}")
+            lines.append("\n🗺 *En Aktif Bölgeler (7 gün):*")
+            for bolge, sayi in en_aktif:
+                lines.append(f"• {bolge}: {sayi} deprem")
+            yanit = "\n".join(lines)
+        except:
+            yanit = "⚠️ İstatistik verisi alınamadı."
+
+    elif m == "/risk":
+        await telegram_gonder(chat_id, "🗺 Risk haritası hazırlanıyor...")
+        yanit = await gemini_sor(
+            "Türkiye'nin deprem risk haritasını açıkla. En riskli bölgeler hangileri, "
+            "hangi fay hatları üzerindeler, geçmişte büyük depremler nerede oldu? "
+            "Bölgeleri risk seviyesine göre sırala. Kısa ve anlaşılır yaz."
+        )
+        yanit = f"🗺 *TÜRKİYE DEPREM RİSK HARİTASI*\n\n{yanit}"
+
+    elif m == "/analiz":
+        try:
+            async with httpx.AsyncClient(timeout=15) as client:
+                r = await client.get(f"{RENDER_URL}/kandilli")
+                quakes = r.json().get("quakes", [])
+            # Son 24 saatteki depremleri filtrele
+            yirmi_dort_saat = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S")
+            son_24 = [q for q in quakes if q["time"] > yirmi_dort_saat]
+            if not son_24:
+                yanit = "⚠️ Son 24 saatte kayıt bulunamadı."
+            else:
+                await telegram_gonder(chat_id, f"🔎 Son 24 saatte *{len(son_24)} deprem* tespit edildi. Analiz yapılıyor...")
+                deprem_listesi = "\n".join([
+                    f"- {q['mag']} {q['magType']}, {q['place']}, derinlik {q['depth']} km, zaman {q['time']}"
+                    for q in son_24
+                ])
+                yorum = await gemini_sor(
+                    f"Aşağıdaki son 24 saatteki {len(son_24)} depremi bir deprem uzmanı olarak analiz et. "
+                    f"En aktif bölgeler hangileri? Kümelenme var mı? Dikkat edilmesi gereken bir durum var mı? "
+                    f"Risk değerlendirmesi yap. Kısa, net ve anlaşılır yaz:\n\n{deprem_listesi}"
+                )
+                yanit = f"📊 *24 Saat Deprem Analizi*\n\n{yorum}"
+        except:
+            yanit = "⚠️ Analiz yapılamadı, lütfen tekrar deneyin."
 
     elif m == "/abone":
         if chat_id not in aboneler:
@@ -211,6 +352,46 @@ async def telegram_dinle():
             await asyncio.sleep(5)
 
 # ── UYKU ÖNLEYİCİ ────────────────────────────────────────────────────────────
+async def sabah_ozeti():
+    """Her gün saat 08:00 Türkiye saatinde tüm abonelere deprem özeti gönderir."""
+    while True:
+        now = datetime.utcnow()
+        # Türkiye UTC+3, sabah 08:00 = UTC 05:00
+        hedef = now.replace(hour=5, minute=0, second=0, microsecond=0)
+        if now >= hedef:
+            hedef += timedelta(days=1)
+        bekle = (hedef - now).total_seconds()
+        await asyncio.sleep(bekle)
+
+        try:
+            async with httpx.AsyncClient(timeout=15) as client:
+                r = await client.get(f"{RENDER_URL}/kandilli")
+                quakes = r.json().get("quakes", [])
+            yirmi_dort_saat = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S")
+            son_24 = [q for q in quakes if q["time"] > yirmi_dort_saat]
+            if not son_24:
+                continue
+            deprem_listesi = "\n".join([
+                f"- {q['mag']} {q['magType']}, {q['place']}, derinlik {q['depth']} km"
+                for q in son_24
+            ])
+            yorum = await gemini_sor(
+                f"Dün Türkiye'de {len(son_24)} deprem oldu. "
+                f"Sabah özeti olarak kısa bir değerlendirme yap. "
+                f"Öne çıkan bölgeler, dikkat edilmesi gerekenler:\n\n{deprem_listesi}"
+            )
+            en_buyuk = max(son_24, key=lambda q: q["mag"])
+            mesaj = (
+                f"🌅 *GÜNLÜK DEPREM ÖZETİ*\n"
+                f"_{datetime.utcnow().strftime('%d.%m.%Y')}_\n\n"
+                f"📊 Son 24 saatte: *{len(son_24)} deprem*\n"
+                f"💥 En büyük: *{en_buyuk['mag']} {en_buyuk['magType']}* — {en_buyuk['place']}\n\n"
+                f"🤖 *Uzman Yorumu:*\n{yorum}"
+            )
+            await telegram_herkese_gonder(mesaj)
+        except Exception as e:
+            print(f"[Sabah özeti hata]: {e}")
+
 async def uyku_onleyici():
     while True:
         try:
@@ -221,6 +402,8 @@ async def uyku_onleyici():
         await asyncio.sleep(600)
 
 # ── DEPREM ALARMCISI ──────────────────────────────────────────────────────────
+artci_takip: dict[str, dict] = {}
+
 son_kontrol_zamani = ""
 
 async def deprem_alarmcisi():
@@ -246,7 +429,38 @@ async def deprem_alarmcisi():
                         kucukler = [d for d in bolge_gecmis[place] if d["mag"] < 3.5]
                         if len(kucukler) == 5:
                             await telegram_herkese_gonder(kume_uyari_metni(place, kucukler))
-                        metin = bildirim_metni(q)
+                        if mag >= 5.0:
+                            # Büyük deprem — artçı takibini başlat
+                            artci_takip[q["id"]] = {
+                                "ana_mag": mag,
+                                "place": place,
+                                "time": q["time"],
+                                "artcilar": []
+                            }
+                            metin = (
+                                f"🆘🆘🆘 *BÜYÜK DEPREM* 🆘🆘🆘\n\n"
+                                f"📍 Yer: {q.get('place', 'Bilinmiyor')}\n"
+                                f"💥 Büyüklük: *{mag} {q.get('magType', '')}*\n"
+                                f"🕐 Zaman: {q.get('time', '').replace('T', ' ')}\n"
+                                f"🔻 Derinlik: {q.get('depth', '?')} km\n\n"
+                                f"⚠️ HEMEN GÜVENLİ ALANA GEÇİN!\n"
+                                f"📞 Acil: 112"
+                            )
+                        else:
+                            # Artçı mı kontrol et
+                            for ana_id, ana in list(artci_takip.items()):
+                                if place.lower() in ana["place"].lower() or ana["place"].lower() in place.lower():
+                                    ana["artcilar"].append(q)
+                                    if len(ana["artcilar"]) in [3, 5, 10]:
+                                        artci_mesaj = (
+                                            f"🔄 *ARTÇI DEPREM UYARISI*\n\n"
+                                            f"📍 {ana['place']} bölgesinde {ana['ana_mag']} büyüklüğündeki depremin ardından\n"
+                                            f"*{len(ana['artcilar'])} artçı deprem* kaydedildi.\n\n"
+                                            f"Son artçı: {mag} {q.get('magType', '')} — {q['time'].replace('T', ' ')}\n\n"
+                                            f"⚠️ Dikkatli olmaya devam edin."
+                                        )
+                                        await telegram_herkese_gonder(artci_mesaj)
+                            metin = bildirim_metni(q)
                         for chat_id, ayarlar in list(aboneler.items()):
                             if mag < ayarlar.get("min_mag", 3.5):
                                 continue
@@ -268,6 +482,7 @@ async def startup():
     asyncio.create_task(telegram_dinle())
     asyncio.create_task(deprem_alarmcisi())
     asyncio.create_task(uyku_onleyici())
+    asyncio.create_task(sabah_ozeti())
 
 # ── KANDİLLİ ─────────────────────────────────────────────────────────────────
 def parse_kandilli(html):
