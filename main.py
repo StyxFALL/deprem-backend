@@ -219,9 +219,11 @@ async def yanit_uret(chat_id: int, metin: str):
                 yanit = "⚠️ Son 24 saatte kayıt bulunamadı."
             else:
                 await telegram_gonder(chat_id, f"🔎 Son 24 saatte *{len(son_24)} deprem* tespit edildi. Analiz yapılıyor...")
+                # En büyük 30 depremi gönder, listeyi kısa tut
+                analiz_listesi = sorted(son_24, key=lambda q: q["mag"], reverse=True)[:30]
                 deprem_listesi = "\n".join([
                     f"- {q['mag']} {q['magType']}, {q['place']}, derinlik {q['depth']} km, zaman {q['time']}"
-                    for q in son_24
+                    for q in analiz_listesi
                 ])
                 yorum = await gemini_sor(
                     f"Aşağıdaki son 24 saatteki {len(son_24)} depremi bir deprem uzmanı olarak analiz et. "
