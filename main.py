@@ -33,6 +33,8 @@ fay hatlarını ve deprem tarihini çok iyi biliyorsun.
 db_pool = None
 bolge_gecmis: dict[str, list] = defaultdict(list)
 artci_takip: dict[str, dict] = {}
+bekleyen_sayi: dict[int, str] = {}
+
 EMSC_URL = "https://www.seismicportal.eu/fdsnws/event/1/query?format=json&limit=100&minmag=1.0&minlatitude=35&maxlatitude=43&minlongitude=25&maxlongitude=45"
 
 son_kontrol_zamani_kandilli = ""
@@ -47,9 +49,25 @@ async def db_baglat():
         CREATE TABLE IF NOT EXISTS aboneler (
             chat_id BIGINT PRIMARY KEY,
             sehir TEXT,
-            min_mag FLOAT DEFAULT 3.5
+            min_mag FLOAT DEFAULT 3.5,
+            uyku_baslangic TEXT DEFAULT NULL,
+            uyku_bitis TEXT DEFAULT NULL,
+            kaynak_kandilli BOOLEAN DEFAULT TRUE,
+            kaynak_afad BOOLEAN DEFAULT TRUE,
+            kaynak_emsc BOOLEAN DEFAULT TRUE
         )
     """)
+    for col in [
+        "uyku_baslangic TEXT DEFAULT NULL",
+        "uyku_bitis TEXT DEFAULT NULL",
+        "kaynak_kandilli BOOLEAN DEFAULT TRUE",
+        "kaynak_afad BOOLEAN DEFAULT TRUE",
+        "kaynak_emsc BOOLEAN DEFAULT TRUE"
+    ]:
+        try:
+            await db_pool.execute(f"ALTER TABLE aboneler ADD COLUMN {col}")
+        except:
+            pass
 
 async def abone_ekle(chat_id: int, sehir=None, min_mag=3.5):
     await db_pool.execute("""
@@ -76,8 +94,53 @@ async def abone_sil(chat_id: int):
     await db_pool.execute("DELETE FROM aboneler WHERE chat_id = $1", chat_id)
 
 async def abone_listesi():
-    rows = await db_pool.fetch("SELECT chat_id, sehir, min_mag FROM aboneler")
-    return [{"chat_id": r["chat_id"], "sehir": r["sehir"], "min_mag": r["min_mag"]} for r in rows]
+    rows = await db_pool.fetch(
+        "SELECT chat_id, sehir, min_mag, uyku_baslangic, uyku_bitis, "
+        "kaynak_kandilli, kaynak_afad, kaynak_emsc FROM aboneler"
+    )
+    return [{
+        "chat_id":          r["chat_id"],
+        "sehir":            r["sehir"],
+        "min_mag":          r["min_mag"],
+        "uyku_baslangic":   r["uyku_baslangic"],
+        "uyku_bitis":       r["uyku_bitis"],
+        "kaynak_kandilli":  r["kaynak_kandilli"] if r["kaynak_kandilli"] is not None else True,
+        "kaynak_afad":      r["kaynak_afad"]     if r["kaynak_afad"]     is not None else True,
+        "kaynak_emsc":      r["kaynak_emsc"]     if r["kaynak_emsc"]     is not None else True,
+    } for r in rows]
+
+async def abone_kaynak_guncelle(chat_id: int, kandilli: bool, afad: bool, emsc: bool):
+    await db_pool.execute("""
+        INSERT INTO aboneler (chat_id, sehir, min_mag, kaynak_kandilli, kaynak_afad, kaynak_emsc)
+        VALUES ($1, NULL, 3.5, $2, $3, $4)
+        ON CONFLICT (chat_id) DO UPDATE SET kaynak_kandilli = $2, kaynak_afad = $3, kaynak_emsc = $4
+    """, chat_id, kandilli, afad, emsc)
+
+async def abone_uyku_ayarla(chat_id: int, baslangic: str, bitis: str):
+    await db_pool.execute("""
+        INSERT INTO aboneler (chat_id, sehir, min_mag, uyku_baslangic, uyku_bitis)
+        VALUES ($1, NULL, 3.5, $2, $3)
+        ON CONFLICT (chat_id) DO UPDATE SET uyku_baslangic = $2, uyku_bitis = $3
+    """, chat_id, baslangic, bitis)
+
+async def abone_uyku_kaldir(chat_id: int):
+    await db_pool.execute(
+        "UPDATE aboneler SET uyku_baslangic = NULL, uyku_bitis = NULL WHERE chat_id = $1",
+        chat_id
+    )
+
+def uyku_modunda_mi(uyku_baslangic: str, uyku_bitis: str) -> bool:
+    if not uyku_baslangic or not uyku_bitis:
+        return False
+    try:
+        simdi = (datetime.utcnow() + timedelta(hours=3)).strftime("%H:%M")
+        b, s = uyku_baslangic, uyku_bitis
+        if b <= s:
+            return b <= simdi < s
+        else:
+            return simdi >= b or simdi < s
+    except:
+        return False
 
 # ── TELEGRAM ──────────────────────────────────────────────────────────────────
 async def telegram_gonder(chat_id: int, metin: str):
@@ -101,14 +164,13 @@ async def gemini_sor(soru: str, web_arama: bool = False) -> str:
     try:
         body = {
             "contents": [
-                {"role": "user", "parts": [{"text": SISTEM_PROMPT}]},
+                {"role": "user",  "parts": [{"text": SISTEM_PROMPT}]},
                 {"role": "model", "parts": [{"text": "Anlaşıldı, deprem uzmanı olarak yardımcı olacağım."}]},
-                {"role": "user", "parts": [{"text": soru}]}
+                {"role": "user",  "parts": [{"text": soru}]}
             ]
         }
         if web_arama:
             body["tools"] = [{"google_search": {}}]
-
         async with httpx.AsyncClient(timeout=30) as client:
             r = await client.post(GEMINI_URL, json=body)
         data = r.json()
@@ -152,7 +214,7 @@ async def gemini_fotograf_analiz(base64_img: str, mime: str) -> str:
 # ── BİLDİRİM METİNLERİ ───────────────────────────────────────────────────────
 def bildirim_metni(q: dict, kaynak: str = "Kandilli") -> str:
     zaman = q.get("time", "").replace("T", " ")
-    simge = "🔵" if kaynak == "Kandilli" else "🟠"
+    simge = "🔵" if kaynak == "Kandilli" else "🟠" if kaynak == "AFAD" else "🟣"
     return (
         f"🚨 *DEPREM BİLDİRİMİ*\n"
         f"{simge} _Kaynak: {kaynak}_\n\n"
@@ -165,7 +227,7 @@ def bildirim_metni(q: dict, kaynak: str = "Kandilli") -> str:
     )
 
 def buyuk_deprem_metni(q: dict, kaynak: str = "Kandilli") -> str:
-    simge = "🔵" if kaynak == "Kandilli" else "🟠"
+    simge = "🔵" if kaynak == "Kandilli" else "🟠" if kaynak == "AFAD" else "🟣"
     return (
         f"🆘🆘🆘 *BÜYÜK DEPREM* 🆘🆘🆘\n"
         f"{simge} _Kaynak: {kaynak}_\n\n"
@@ -187,8 +249,6 @@ def kume_uyari_metni(bolge: str, depremler: list) -> str:
     )
 
 # ── KOMUT İŞLEYİCİ ───────────────────────────────────────────────────────────
-bekleyen_sayi: dict[int, str] = {}  # chat_id → beklenen komut
-
 async def sondepremler_goster(chat_id: int, adet: int):
     try:
         adet = max(1, min(adet, 50))
@@ -227,7 +287,8 @@ async def sondepremler_goster(chat_id: int, adet: int):
 
 async def yanit_uret(chat_id: int, metin: str):
     # Telegram grup kullanımında /komut@botismi formatını temizle
-    metin = metin.split("@")[0] if metin.startswith("/") else metin
+    if metin.startswith("/"):
+        metin = metin.split("@")[0]
     m = metin.strip().lower()
 
     # Bekleyen sayı cevabı var mı?
@@ -241,7 +302,7 @@ async def yanit_uret(chat_id: int, metin: str):
                 await telegram_gonder(chat_id, "❌ Geçersiz sayı. /sondepremler ile tekrar deneyin.")
             return
 
-    if m.split("@")[0] in ["/start", "/yardim", "yardım", "merhaba"]:
+    if m in ["/start", "/yardim", "yardım", "merhaba"]:
         yanit = (
             "👋 *Deprem Bot'a Hoş Geldiniz!*\n\n"
             "📋 Komutlar:\n\n"
@@ -258,6 +319,10 @@ async def yanit_uret(chat_id: int, metin: str):
             "🔔 /abone — Otomatik bildirim al\n"
             "📍 /konum İstanbul — Şehir filtresi\n"
             "⚙️ /esik 3.5 — Büyüklük eşiği ayarla\n"
+            "📡 /kaynak — Bildirim kaynaklarını seç\n"
+            "🌙 /uyku 23:00-07:00 — Uyku saati ayarla\n"
+            "☀️ /uyku_kapat — Uyku modunu kapat\n"
+            "📊 /uyku_durum — Uyku modu durumunu gör\n"
             "🔕 /iptal — Bildirimleri durdur\n"
             "📋 /neyapmali — Depremde ne yapmalı rehberi\n\n"
             "📸 Hasar fotoğrafı gönder — Gemini analiz eder\n"
@@ -266,42 +331,8 @@ async def yanit_uret(chat_id: int, metin: str):
 
     elif m == "/sondepremler":
         await telegram_gonder(chat_id, "🔢 Kaç deprem görmek istersiniz?\n\nLütfen bir sayı girin (örn: 5, 10, 20)\nVarsayılan: 10")
-        # Kullanıcının cevabını beklemek için state tutuyoruz
         bekleyen_sayi[chat_id] = "sondepremler"
         return
-        try:
-            async with httpx.AsyncClient(timeout=15) as client:
-                r = await client.get(f"{RENDER_URL}/kandilli")
-                quakes = r.json().get("quakes", [])[:10]
-            if not quakes:
-                yanit = "⚠️ Deprem verisi alınamadı, lütfen tekrar deneyin."
-            else:
-                lines = ["🔍 *SON 10 DEPREM*\n_Kaynak: Kandilli Rasathanesi_\n"]
-                for q in quakes:
-                    mag = q["mag"]
-                    renk = "🔴" if mag >= 4.0 else "🟡" if mag >= 3.0 else "🟢"
-                    tarih = q["time"].replace("T", " ")[5:16]
-                    lines.append(
-                        f"━━━━━━━━━━━━━━━\n"
-                        f"{renk} *{mag} {q['magType']}* — {q['place']}\n"
-                        f"📅 {tarih}  |  🔻 {q['depth']} km"
-                    )
-                lines.append("━━━━━━━━━━━━━━━")
-                await telegram_gonder(chat_id, "\n".join(lines))
-                await telegram_gonder(chat_id, "🤔 Uzman yorumu hazırlanıyor...")
-                deprem_listesi = "\n".join([
-                    f"- {q['mag']} {q['magType']}, {q['place']}, derinlik {q['depth']} km, zaman {q['time']}"
-                    for q in quakes
-                ])
-                yorum = await gemini_sor(
-                    f"Aşağıdaki son depremleri bir deprem uzmanı olarak kısaca yorumla. "
-                    f"Dikkat çeken bir durum var mı, hangi bölgeler aktif, risk var mı? "
-                    f"Kısa ve anlaşılır yaz:\n\n{deprem_listesi}"
-                )
-                yanit = f"🤖 *Uzman Yorumu:*\n\n{yorum}"
-        except Exception as e:
-            print(f"[sondeprem hata]: {e}")
-            yanit = "⚠️ Deprem verisi alınamadı, lütfen tekrar deneyin."
 
     elif m == "/analiz":
         try:
@@ -498,6 +529,8 @@ async def yanit_uret(chat_id: int, metin: str):
             "📊 Varsayılan eşik: 3.5+ büyüklük\n\n"
             "Şehir filtresi: /konum İstanbul\n"
             "Eşik değiştir: /esik 4.0\n"
+            "Kaynakları seç: /kaynak\n"
+            "Uyku saati: /uyku 23:00-07:00\n"
             "İptal: /iptal"
         )
 
@@ -513,6 +546,126 @@ async def yanit_uret(chat_id: int, metin: str):
             yanit = f"⚙️ Bildirim eşiği *{esik}* olarak ayarlandı."
         except:
             yanit = "❌ Geçersiz değer. Örnek: /esik 3.5"
+
+    elif m.startswith("/kaynak"):
+        parcalar = m.strip().split()
+        if len(parcalar) < 2:
+            try:
+                rows = await db_pool.fetch(
+                    "SELECT kaynak_kandilli, kaynak_afad, kaynak_emsc FROM aboneler WHERE chat_id = $1", chat_id
+                )
+                if rows:
+                    k = "✅" if rows[0]["kaynak_kandilli"] else "❌"
+                    a = "✅" if rows[0]["kaynak_afad"]     else "❌"
+                    e = "✅" if rows[0]["kaynak_emsc"]     else "❌"
+                else:
+                    k = a = e = "✅"
+            except:
+                k = a = e = "✅"
+            yanit = (
+                f"📡 *Bildirim Kaynakları*\n\n"
+                f"{k} Kandilli\n"
+                f"{a} AFAD\n"
+                f"{e} EMSC\n\n"
+                f"Değiştirmek için:\n"
+                f"`/kaynak kandilli` — Kandilli aç/kapat\n"
+                f"`/kaynak afad` — AFAD aç/kapat\n"
+                f"`/kaynak emsc` — EMSC aç/kapat\n"
+                f"`/kaynak hepsi` — Hepsini aç\n\n"
+                f"⚠️ En az 1 kaynak açık kalmalıdır."
+            )
+        else:
+            secim = parcalar[1].lower()
+            try:
+                rows = await db_pool.fetch(
+                    "SELECT kaynak_kandilli, kaynak_afad, kaynak_emsc FROM aboneler WHERE chat_id = $1", chat_id
+                )
+                k = rows[0]["kaynak_kandilli"] if rows else True
+                a = rows[0]["kaynak_afad"]     if rows else True
+                e = rows[0]["kaynak_emsc"]     if rows else True
+
+                if secim == "hepsi":
+                    await abone_ekle(chat_id)
+                    await abone_kaynak_guncelle(chat_id, True, True, True)
+                    yanit = "📡 Tüm kaynaklar açık: Kandilli ✅ AFAD ✅ EMSC ✅"
+                elif secim in ["kandilli", "afad", "emsc"]:
+                    yeni_k = (not k) if secim == "kandilli" else k
+                    yeni_a = (not a) if secim == "afad"     else a
+                    yeni_e = (not e) if secim == "emsc"     else e
+                    if not any([yeni_k, yeni_a, yeni_e]):
+                        yanit = "⚠️ En az 1 kaynak açık kalmalıdır! Diğerini açmadan bunu kapat."
+                    else:
+                        await abone_ekle(chat_id)
+                        await abone_kaynak_guncelle(chat_id, yeni_k, yeni_a, yeni_e)
+                        isimler = {"kandilli": "Kandilli", "afad": "AFAD", "emsc": "EMSC"}
+                        yeni_durum = {"kandilli": yeni_k, "afad": yeni_a, "emsc": yeni_e}
+                        durum = "✅ açık" if yeni_durum[secim] else "❌ kapalı"
+                        yanit = (
+                            f"📡 {isimler[secim]} bildirimleri: *{durum}*\n\n"
+                            f"Güncel durum:\n"
+                            f"{'✅' if yeni_k else '❌'} Kandilli\n"
+                            f"{'✅' if yeni_a else '❌'} AFAD\n"
+                            f"{'✅' if yeni_e else '❌'} EMSC"
+                        )
+                else:
+                    yanit = "❌ Geçersiz seçim. Kullanım: /kaynak kandilli | afad | emsc | hepsi"
+            except Exception as ex:
+                print(f"[kaynak hata]: {ex}")
+                yanit = "⚠️ Kaynak ayarı güncellenemedi."
+
+    elif m.startswith("/uyku"):
+        parcalar = metin.strip().split()
+        if len(parcalar) < 2:
+            yanit = (
+                "⏰ *Uyku Modu Ayarı*\n\n"
+                "Kullanım: /uyku 23:00-07:00\n\n"
+                "Bu saatler arasında M4 altındaki deprem bildirimleri gönderilmez.\n"
+                "*M4 ve üzeri depremler uyku modunu deler, her zaman bildirim alırsınız.*\n\n"
+                "Uyku modunu kapatmak için: /uyku_kapat"
+            )
+        else:
+            try:
+                aralik = parcalar[1]
+                if "-" not in aralik:
+                    raise ValueError()
+                bas, bit = aralik.split("-")
+                datetime.strptime(bas.strip(), "%H:%M")
+                datetime.strptime(bit.strip(), "%H:%M")
+                bas, bit = bas.strip(), bit.strip()
+                await abone_ekle(chat_id)
+                await abone_uyku_ayarla(chat_id, bas, bit)
+                yanit = (
+                    f"🌙 *Uyku modu ayarlandı!*\n\n"
+                    f"⏰ Sessiz saat: *{bas} — {bit}* (Türkiye saati)\n\n"
+                    f"Bu saatler arasında M4 altındaki bildirimler gönderilmeyecek.\n"
+                    f"*M4+ depremler her zaman bildirilecek.*\n\n"
+                    f"İptal için: /uyku_kapat"
+                )
+            except:
+                yanit = "❌ Geçersiz format. Örnek: /uyku 23:00-07:00"
+
+    elif m == "/uyku_kapat":
+        await abone_uyku_kaldir(chat_id)
+        yanit = "☀️ Uyku modu kapatıldı. Tüm bildirimler tekrar aktif."
+
+    elif m == "/uyku_durum":
+        try:
+            rows = await db_pool.fetch(
+                "SELECT uyku_baslangic, uyku_bitis FROM aboneler WHERE chat_id = $1", chat_id
+            )
+            if rows and rows[0]["uyku_baslangic"]:
+                bas, bit = rows[0]["uyku_baslangic"], rows[0]["uyku_bitis"]
+                aktif = uyku_modunda_mi(bas, bit)
+                yanit = (
+                    f"🌙 *Uyku Modu Durumu*\n\n"
+                    f"⏰ Ayarlı saat: *{bas} — {bit}*\n"
+                    f"Şu an: {'😴 Uyku modunda' if aktif else '✅ Aktif (bildirimler açık)'}\n\n"
+                    f"Kapatmak için: /uyku_kapat"
+                )
+            else:
+                yanit = "☀️ Uyku modu ayarlı değil.\n\nAyarlamak için: /uyku 23:00-07:00"
+        except:
+            yanit = "⚠️ Uyku modu durumu alınamadı."
 
     elif m == "/iptal":
         await abone_sil(chat_id)
@@ -682,6 +835,16 @@ async def kaynak_kontrol(quakes: list, kaynak: str, son_zaman: str) -> str:
                 sehir = a.get("sehir")
                 if sehir and sehir.lower() not in place.lower():
                     continue
+                # Kaynak filtresi
+                if kaynak == "Kandilli" and not a.get("kaynak_kandilli", True):
+                    continue
+                if kaynak == "AFAD" and not a.get("kaynak_afad", True):
+                    continue
+                if kaynak == "EMSC" and not a.get("kaynak_emsc", True):
+                    continue
+                # Uyku modu — M4+ her zaman gönderilir
+                if mag < 4.0 and uyku_modunda_mi(a.get("uyku_baslangic"), a.get("uyku_bitis")):
+                    continue
                 await telegram_gonder(a["chat_id"], bildirim)
 
     return en_yeni
@@ -696,7 +859,6 @@ async def deprem_alarmcisi():
                     del artci_takip[ana_id]
 
             async with httpx.AsyncClient(timeout=15) as client:
-                # Kandilli
                 try:
                     r = await client.get(f"{RENDER_URL}/kandilli")
                     kandilli_quakes = r.json().get("quakes", [])
@@ -706,7 +868,6 @@ async def deprem_alarmcisi():
                 except Exception as e:
                     print(f"[Kandilli kontrol hata]: {e}")
 
-                # AFAD
                 try:
                     r = await client.get(f"{RENDER_URL}/afad")
                     afad_quakes = r.json().get("quakes", [])
@@ -716,7 +877,6 @@ async def deprem_alarmcisi():
                 except Exception as e:
                     print(f"[AFAD kontrol hata]: {e}")
 
-                # EMSC
                 try:
                     r = await client.get(EMSC_URL, timeout=15)
                     emsc_data = r.json()
@@ -725,14 +885,14 @@ async def deprem_alarmcisi():
                         p = f.get("properties", {})
                         geo = f.get("geometry", {}).get("coordinates", [0, 0, 0])
                         emsc_quakes.append({
-                            "id": f.get("id", ""),
-                            "time": p.get("time", "").replace("Z", "").replace(".000", ""),
-                            "lat": geo[1],
-                            "lon": geo[0],
-                            "depth": abs(geo[2]) if len(geo) > 2 else 0,
-                            "mag": p.get("mag", 0),
+                            "id":      f.get("id", ""),
+                            "time":    p.get("time", "").replace("Z", "").replace(".000", ""),
+                            "lat":     geo[1],
+                            "lon":     geo[0],
+                            "depth":   abs(geo[2]) if len(geo) > 2 else 0,
+                            "mag":     p.get("mag", 0),
                             "magType": p.get("magtype", "M"),
-                            "place": p.get("flynn_region", p.get("place", ""))
+                            "place":   p.get("flynn_region", p.get("place", ""))
                         })
                     emsc_quakes.sort(key=lambda q: q["time"], reverse=True)
                     son_kontrol_zamani_emsc = await kaynak_kontrol(
@@ -845,8 +1005,7 @@ async def fetch_afad():
             if j.get("status"):
                 archive = [q for q in (normalize_afad(x) for x in j.get("result", [])) if q]
     except: pass
-    seen = set()
-    merged = []
+    seen, merged = set(), []
     for q in live + archive:
         if q["id"] and q["id"] not in seen:
             seen.add(q["id"])
@@ -854,12 +1013,25 @@ async def fetch_afad():
     return sorted(merged, key=lambda q: q["time"], reverse=True)
 
 # ── ENDPOINTLEr ───────────────────────────────────────────────────────────────
+@app.get("/kandilli")
+async def kandilli():
+    data = await fetch_kandilli()
+    return {"count": len(data), "source": "Kandilli", "quakes": data}
+
+@app.get("/afad")
+async def afad():
+    try:
+        data = await fetch_afad()
+        return {"count": len(data), "source": "AFAD", "quakes": data}
+    except Exception as e:
+        return {"count": 0, "source": "AFAD", "quakes": [], "error": str(e)}
+
 @app.get("/emsc")
 async def emsc():
     try:
         async with httpx.AsyncClient(timeout=15) as client:
             r = await client.get(EMSC_URL)
-            emsc_data = r.json()
+        emsc_data = r.json()
         quakes = []
         for f in emsc_data.get("features", []):
             p = f.get("properties", {})
@@ -878,19 +1050,6 @@ async def emsc():
         return {"count": len(quakes), "source": "EMSC", "quakes": quakes}
     except Exception as e:
         return {"count": 0, "source": "EMSC", "quakes": [], "error": str(e)}
-
-@app.get("/kandilli")
-async def kandilli():
-    data = await fetch_kandilli()
-    return {"count": len(data), "source": "Kandilli", "quakes": data}
-
-@app.get("/afad")
-async def afad():
-    try:
-        data = await fetch_afad()
-        return {"count": len(data), "source": "AFAD", "quakes": data}
-    except Exception as e:
-        return {"count": 0, "source": "AFAD", "quakes": [], "error": str(e)}
 
 @app.get("/depremler")
 async def depremler():
