@@ -187,16 +187,65 @@ def kume_uyari_metni(bolge: str, depremler: list) -> str:
     )
 
 # ── KOMUT İŞLEYİCİ ───────────────────────────────────────────────────────────
+bekleyen_sayi: dict[int, str] = {}  # chat_id → beklenen komut
+
+async def sondepremler_goster(chat_id: int, adet: int):
+    try:
+        adet = max(1, min(adet, 50))
+        async with httpx.AsyncClient(timeout=15) as client:
+            r = await client.get(f"{RENDER_URL}/kandilli")
+            quakes = r.json().get("quakes", [])[:adet]
+        if not quakes:
+            await telegram_gonder(chat_id, "⚠️ Deprem verisi alınamadı, lütfen tekrar deneyin.")
+            return
+        lines = [f"🔍 *SON {adet} DEPREM*\n_Kaynak: Kandilli Rasathanesi_\n"]
+        for q in quakes:
+            mag = q["mag"]
+            renk = "🔴" if mag >= 4.0 else "🟡" if mag >= 3.0 else "🟢"
+            tarih = q["time"].replace("T", " ")[5:16]
+            lines.append(
+                f"━━━━━━━━━━━━━━━\n"
+                f"{renk} *{mag} {q['magType']}* — {q['place']}\n"
+                f"📅 {tarih}  |  🔻 {q['depth']} km"
+            )
+        lines.append("━━━━━━━━━━━━━━━")
+        await telegram_gonder(chat_id, "\n".join(lines))
+        await telegram_gonder(chat_id, "🤔 Uzman yorumu hazırlanıyor...")
+        deprem_listesi = "\n".join([
+            f"- {q['mag']} {q['magType']}, {q['place']}, derinlik {q['depth']} km, zaman {q['time']}"
+            for q in quakes
+        ])
+        yorum = await gemini_sor(
+            f"Aşağıdaki son {adet} depremi bir deprem uzmanı olarak kısaca yorumla. "
+            f"Dikkat çeken bir durum var mı, hangi bölgeler aktif, risk var mı? "
+            f"Kısa ve anlaşılır yaz:\n\n{deprem_listesi}"
+        )
+        await telegram_gonder(chat_id, f"🤖 *Uzman Yorumu:*\n\n{yorum}")
+    except Exception as e:
+        print(f"[sondepremler hata]: {e}")
+        await telegram_gonder(chat_id, "⚠️ Deprem verisi alınamadı, lütfen tekrar deneyin.")
+
 async def yanit_uret(chat_id: int, metin: str):
     # Telegram grup kullanımında /komut@botismi formatını temizle
     metin = metin.split("@")[0] if metin.startswith("/") else metin
     m = metin.strip().lower()
 
-    if m in ["/start", "/yardim", "yardım", "merhaba"]:
+    # Bekleyen sayı cevabı var mı?
+    if chat_id in bekleyen_sayi and not m.startswith("/"):
+        komut = bekleyen_sayi.pop(chat_id)
+        if komut == "sondepremler":
+            try:
+                adet = int(m.strip())
+                await sondepremler_goster(chat_id, adet)
+            except ValueError:
+                await telegram_gonder(chat_id, "❌ Geçersiz sayı. /sondepremler ile tekrar deneyin.")
+            return
+
+    if m.split("@")[0] in ["/start", "/yardim", "yardım", "merhaba"]:
         yanit = (
             "👋 *Deprem Bot'a Hoş Geldiniz!*\n\n"
             "📋 Komutlar:\n\n"
-            "🔍 /sondeprem — Son 10 deprem + uzman yorumu\n"
+            "🔍 /sondepremler — Son depremleri listele\n"
             "📊 /analiz — Son 24 saatin deprem analizi\n"
             "📈 /istatistik — Deprem istatistikleri\n"
             "🗺 /bolgeler — 24 saatte en aktif bölgeler\n"
@@ -210,12 +259,16 @@ async def yanit_uret(chat_id: int, metin: str):
             "📍 /konum İstanbul — Şehir filtresi\n"
             "⚙️ /esik 3.5 — Büyüklük eşiği ayarla\n"
             "🔕 /iptal — Bildirimleri durdur\n"
-            "📋 /nehyapmali — Deprem güvenlik rehberi\n\n"
+            "📋 /neyapmali — Depremde ne yapmalı rehberi\n\n"
             "📸 Hasar fotoğrafı gönder — Gemini analiz eder\n"
             "💬 Veya 'Naci Görür ne dedi?' gibi sorular sorabilirsiniz!"
         )
 
-    elif m == "/sondeprem":
+    elif m == "/sondepremler":
+        await telegram_gonder(chat_id, "🔢 Kaç deprem görmek istersiniz?\n\nLütfen bir sayı girin (örn: 5, 10, 20)\nVarsayılan: 10")
+        # Kullanıcının cevabını beklemek için state tutuyoruz
+        bekleyen_sayi[chat_id] = "sondepremler"
+        return
         try:
             async with httpx.AsyncClient(timeout=15) as client:
                 r = await client.get(f"{RENDER_URL}/kandilli")
@@ -465,7 +518,7 @@ async def yanit_uret(chat_id: int, metin: str):
         await abone_sil(chat_id)
         yanit = "🔕 Aboneliğiniz iptal edildi."
 
-    elif m == "/nehyapmali":
+    elif m == "/neyapmali":
         yanit = (
             "📋 *Depremde Yapılması Gerekenler*\n\n"
             "🏠 *İÇERİDEYSEN:*\n"
