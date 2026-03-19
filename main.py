@@ -188,6 +188,8 @@ def kume_uyari_metni(bolge: str, depremler: list) -> str:
 
 # ── KOMUT İŞLEYİCİ ───────────────────────────────────────────────────────────
 async def yanit_uret(chat_id: int, metin: str):
+    # Telegram grup kullanımında /komut@botismi formatını temizle
+    metin = metin.split("@")[0] if metin.startswith("/") else metin
     m = metin.strip().lower()
 
     if m in ["/start", "/yardim", "yardım", "merhaba"]:
