@@ -24,8 +24,9 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
 .pulse.off{background:#f97316}.pulse.off::after{border-color:#f97316;animation:none}
 .hdr-meta{display:flex;align-items:center;gap:8px;padding:5px 0 10px;font-size:11px;color:#475569}
 .cd-badge{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.2);color:#818cf8;padding:2px 7px;border-radius:6px;font-size:10px;min-width:36px;text-align:center}
-.btn-refresh{margin-left:auto;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:8px;padding:5px 14px;color:#fff;font-size:11px;font-weight:700;cursor:pointer}
-.btn-refresh:disabled{opacity:.4;cursor:not-allowed}
+.btn-refresh{background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:8px;padding:5px 14px;color:#fff;font-size:11px;font-weight:700;cursor:pointer}
+.btn-tg-header{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#229ED9,#1a7ab3);border:none;border-radius:8px;padding:5px 12px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn-tg-header:hover{opacity:.85}
 
 /* STAT STRIP */
 .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.07)}
@@ -127,12 +128,46 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
 .risk-mini{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 8px;text-align:center}
 .timeline-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px;overflow-x:auto}
 
+/* GEMİNİ AI PANELİ */
+.ai-panel{margin:12px 16px;border-radius:14px;border:1px solid rgba(99,102,241,.25);background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.05));overflow:hidden}
+.ai-header{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(99,102,241,.15)}
+.ai-icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ai-title{font-size:13px;font-weight:700;color:#a5b4fc}
+.ai-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(99,102,241,.2);color:#818cf8;border:1px solid rgba(99,102,241,.3)}
+.ai-badge.analyzing{background:rgba(234,179,8,.15);color:#fde047;border-color:rgba(234,179,8,.3);animation:blink 1s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.ai-body{padding:12px 14px;font-size:12px;line-height:1.7;color:#cbd5e1;min-height:44px}
+.ai-body.empty{color:#334155;font-style:italic}
+.ai-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-top:1px solid rgba(99,102,241,.1);font-size:10px;color:#334155}
+.ai-trigger{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.25);border-radius:7px;padding:4px 10px;color:#818cf8;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}
+.ai-trigger:hover{background:rgba(99,102,241,.25)}
+.ai-trigger:disabled{opacity:.4;cursor:not-allowed}
+
+/* KÜME UYARI BANNER */
+.cluster-banner{margin:10px 16px;border-radius:12px;padding:11px 14px;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.25);display:none;align-items:center;gap:10px}
+.cb-text{font-size:12px;color:#fde047;flex:1}
+
+/* TELEGRAM BANNER */
+.tg-banner{margin:10px 16px 0;border-radius:12px;background:linear-gradient(135deg,rgba(34,158,217,.1),rgba(26,122,179,.07));border:1px solid rgba(34,158,217,.2);padding:12px 14px;display:flex;align-items:center;gap:12px;text-decoration:none}
+.tg-banner-text{flex:1}
+.tg-banner-title{font-size:13px;font-weight:700;color:#7dd3fc;margin-bottom:2px}
+.tg-banner-sub{font-size:11px;color:#475569}
+.tg-banner-btn{background:linear-gradient(135deg,#229ED9,#1a7ab3);border:none;border-radius:8px;padding:8px 14px;color:#fff;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0}
+
+/* TELEGRAM FLOATING */
+.tg-float{position:fixed;bottom:24px;right:20px;z-index:500;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.tg-float-btn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#229ED9,#1a7ab3);border:none;border-radius:50px;padding:12px 18px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 4px 20px rgba(34,158,217,.4);transition:all .2s}
+.tg-float-btn:hover{transform:scale(1.05);box-shadow:0 6px 28px rgba(34,158,217,.5)}
+.tg-float-label{font-size:12px;background:rgba(3,5,15,.9);border:1px solid rgba(34,158,217,.3);border-radius:8px;padding:5px 10px;color:#7dd3fc;backdrop-filter:blur(8px);white-space:nowrap}
+.tg-float-close{position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;background:#1e293b;border:1px solid rgba(255,255,255,.1);color:#64748b;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+
 .tc{display:none}.tc.on{display:block}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);backdrop-filter:blur(12px);border-radius:14px;padding:12px 20px;font-size:13px;font-weight:700;color:#f87171;z-index:1000;display:none;text-align:center;max-width:340px;width:90%}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);backdrop-filter:blur(12px);border-radius:14px;padding:12px 20px;font-size:13px;font-weight:700;color:#f87171;z-index:1000;display:none;text-align:center;max-width:340px;width:90%}
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header>
   <div class="hdr-top">
     <div class="hdr-logo">🌍</div>
@@ -145,10 +180,15 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
   <div class="hdr-meta">
     <span id="lf">Bağlanılıyor…</span>
     <span class="cd-badge" id="cd">--</span>
-    <button class="btn-refresh" id="rbtn" onclick="refreshAll()">↻ Yenile</button>
+    <a class="btn-tg-header" href="https://t.me/depremtakipbot" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 1 0 24 12 12 12 0 0 0 11.944 0zm6.16 7.36l-1.968 9.28c-.144.66-.528.82-1.068.51l-2.952-2.174-1.424 1.37c-.158.157-.29.29-.594.29l.212-3.01 5.5-4.964c.238-.212-.052-.33-.37-.118L7.68 13.32l-2.9-.908c-.63-.196-.642-.63.132-.934l11.33-4.37c.527-.19.99.128.862.862v-.61z"/></svg>
+      Botu Aç
+    </a>
+    <button class="btn-refresh" onclick="refreshAll()">↻ Yenile</button>
   </div>
 </header>
 
+<!-- STAT STRIP -->
 <div class="stat-strip">
   <div class="ss-item"><div class="ss-val" id="st">—</div><div class="ss-lbl" id="stlbl">Toplam</div></div>
   <div class="ss-item"><div class="ss-val" id="sd">—</div><div class="ss-lbl">Bugün</div></div>
@@ -156,14 +196,54 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
   <div class="ss-item"><div class="ss-val red" id="s4">—</div><div class="ss-lbl">M≥4</div></div>
 </div>
 
+<!-- KAYNAK SEKMELERİ -->
 <div class="source-tabs">
   <button class="src-tab on" id="stab0" onclick="srcTab(0)"><div class="src-dot" id="sdot0"></div>Kandilli</button>
   <button class="src-tab" id="stab1" onclick="srcTab(1)"><div class="src-dot" id="sdot1"></div>AFAD</button>
-  <button class="src-tab" id="stab2" onclick="srcTab(2)">⚡ Aktivite</button>
+  <button class="src-tab" id="stab2" onclick="srcTab(2)"><div class="src-dot" id="sdot2"></div>EMSC</button>
+  <button class="src-tab" id="stab3" onclick="srcTab(3)">⚡ Aktivite</button>
 </div>
+
+<!-- GEMİNİ AI PANELİ -->
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-header">
+    <div class="ai-icon">🤖</div>
+    <span class="ai-title">Deprem Analiz Uzmanı</span>
+    <span class="ai-badge" id="aiBadge">Hazır</span>
+  </div>
+  <div class="ai-body empty" id="aiBody">Veri yüklenince otomatik analiz başlayacak…</div>
+  <div class="ai-footer">
+    <span id="aiTime"></span>
+    <button class="ai-trigger" id="aiBtn" onclick="triggerAI()" disabled>🔍 Analiz Et</button>
+  </div>
+</div>
+
+<!-- KÜME UYARI BANNER -->
+<div class="cluster-banner" id="clusterBanner">
+  <span style="font-size:18px">⚠️</span>
+  <div class="cb-text" id="clusterText"></div>
+</div>
+
+<!-- TELEGRAM BANNER (global, tüm sekmelerde görünür) -->
+<a class="tg-banner" href="https://t.me/depremtakipbot" target="_blank">
+  <span style="font-size:22px">📲</span>
+  <div class="tg-banner-text">
+    <div class="tg-banner-title">Anlık bildirim almak ister misin?</div>
+    <div class="tg-banner-sub">Telegram botumuz deprem olduğunda seni anında uyarır</div>
+  </div>
+  <div class="tg-banner-btn">Telegram'da Aç →</div>
+</a>
 
 <!-- KANDİLLİ -->
 <div id="src0" class="tc on">
+  <a class="tg-banner" href="https://t.me/depremtakipbot" target="_blank" style="display:none">
+    <span style="font-size:22px">📲</span>
+    <div class="tg-banner-text">
+      <div class="tg-banner-title">Anlık bildirim almak ister misin?</div>
+      <div class="tg-banner-sub">Telegram botumuz deprem olduğunda seni anında uyarır</div>
+    </div>
+    <div class="tg-banner-btn">Telegram'da Aç →</div>
+  </a>
   <div class="sub-tabs">
     <button class="sub-tab on" onclick="subTab('k',0,this)">🔴 Liste</button>
     <button class="sub-tab" onclick="subTab('k',1,this)">🗺️ Harita</button>
@@ -195,8 +275,7 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
     <div id="klb" class="loading"><div class="loading-icon">📡</div><div>Kandilli yükleniyor…</div><div style="font-size:11px;margin-top:6px;color:#1e293b">İlk açılışta ~30 saniye sürebilir</div></div>
     <div class="list" id="klist" style="display:none"></div>
   </div>
-  <div id="ksub1" class="tc">
-    <div class="mapbox" id="kmap"></div>
+  <div id="ksub1" class="tc"><div class="mapbox" id="kmap"></div>
     <div class="map-legend">
       <div class="ml-item"><div class="ml-dot" style="background:#ef4444"></div>M≥5</div>
       <div class="ml-item"><div class="ml-dot" style="background:#f97316"></div>M 4–5</div>
@@ -241,8 +320,7 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
     <div id="alb" class="loading"><div class="loading-icon">📡</div><div>AFAD yükleniyor…</div><div style="font-size:11px;margin-top:6px;color:#1e293b">İlk açılışta ~30 saniye sürebilir</div></div>
     <div class="list" id="alist" style="display:none"></div>
   </div>
-  <div id="asub1" class="tc">
-    <div class="mapbox" id="amap"></div>
+  <div id="asub1" class="tc"><div class="mapbox" id="amap"></div>
     <div class="map-legend">
       <div class="ml-item"><div class="ml-dot" style="background:#ef4444"></div>M≥5</div>
       <div class="ml-item"><div class="ml-dot" style="background:#f97316"></div>M 4–5</div>
@@ -254,8 +332,53 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
   <div id="asub2" class="tc"><div class="sgrid" id="astats"></div><div class="cbox" id="achart"></div></div>
 </div>
 
-<!-- AKTİVİTE -->
+<!-- EMSC -->
 <div id="src2" class="tc">
+  <div class="sub-tabs">
+    <button class="sub-tab on" onclick="subTab('e',0,this)">🔴 Liste</button>
+    <button class="sub-tab" onclick="subTab('e',1,this)">🗺️ Harita</button>
+    <button class="sub-tab" onclick="subTab('e',2,this)">📈 İstatistik</button>
+  </div>
+  <div id="eerr" class="err"><span id="eerrmsg"></span><button class="retry" onclick="loadEmsc()">Tekrar dene</button></div>
+  <div id="esub0" class="tc on">
+    <div class="filter-bar">
+      <button class="fb on" onclick="setMag('e',0,this)">Tümü</button>
+      <button class="fb" onclick="setMag('e',1,this)">M≥1</button>
+      <button class="fb" onclick="setMag('e',2,this)">M≥2</button>
+      <button class="fb" onclick="setMag('e',3,this)">M≥3</button>
+      <button class="fb" onclick="setMag('e',4,this)">M≥4</button>
+      <span class="cnt" id="ecnt"></span>
+    </div>
+    <div class="region-filter">
+      <div class="region-lbl">🗺️ Bölge Filtresi</div>
+      <div class="region-btns" id="eregionbtns">
+        <button class="rb on" onclick="setRegion('e','',this)">Tüm Türkiye</button>
+        <button class="rb" onclick="setRegion('e','marmara',this)">Marmara</button>
+        <button class="rb" onclick="setRegion('e','ege',this)">Ege</button>
+        <button class="rb" onclick="setRegion('e','akdeniz',this)">Akdeniz</button>
+        <button class="rb" onclick="setRegion('e','karadeniz',this)">Karadeniz</button>
+        <button class="rb" onclick="setRegion('e','ic',this)">İç Anadolu</button>
+        <button class="rb" onclick="setRegion('e','dogu',this)">Doğu Anadolu</button>
+        <button class="rb" onclick="setRegion('e','guneydogu',this)">Güneydoğu Anadolu</button>
+      </div>
+    </div>
+    <div id="elb" class="loading"><div class="loading-icon">📡</div><div>EMSC yükleniyor…</div><div style="font-size:11px;margin-top:6px;color:#1e293b">Avrupa Sismoloji Merkezi verisi</div></div>
+    <div class="list" id="elist" style="display:none"></div>
+  </div>
+  <div id="esub1" class="tc"><div class="mapbox" id="emap"></div>
+    <div class="map-legend">
+      <div class="ml-item"><div class="ml-dot" style="background:#ef4444"></div>M≥5</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#f97316"></div>M 4–5</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#eab308"></div>M 3–4</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#a855f7"></div>M 2–3</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#22c55e"></div>M &lt; 2</div>
+    </div>
+  </div>
+  <div id="esub2" class="tc"><div class="sgrid" id="estats"></div><div class="cbox" id="echart"></div></div>
+</div>
+
+<!-- AKTİVİTE -->
+<div id="src3" class="tc">
   <div class="act-section">
     <div class="act-title">⚡ Anlık Aktivite Skoru</div>
     <div class="risk-card">
@@ -275,184 +398,193 @@ header{position:sticky;top:0;z-index:200;background:rgba(3,5,15,.92);backdrop-fi
       <div id="tlabels" style="display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:#334155;min-width:500px"></div>
     </div>
     <div style="margin-top:8px;font-size:12px;color:#475569;text-align:center" id="tlinfo"></div>
+    <div style="margin-top:16px">
+      <div class="act-title">🤖 AI Aktivite Yorumu</div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(99,102,241,.2);border-radius:13px;padding:14px;font-size:12px;line-height:1.7;color:#cbd5e1" id="aiActivityBody">
+        <span style="color:#334155;font-style:italic">Aktivite sekmesine geçince otomatik analiz yapılır…</span>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- FLOATING TELEGRAM -->
+<div class="tg-float" id="tgFloat">
+  <div class="tg-float-label">📲 Deprem bildirimleri al</div>
+  <a class="tg-float-btn" href="https://t.me/depremtakipbot" target="_blank">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 1 0 24 12 12 12 0 0 0 11.944 0zm6.16 7.36l-1.968 9.28c-.144.66-.528.82-1.068.51l-2.952-2.174-1.424 1.37c-.158.157-.29.29-.594.29l.212-3.01 5.5-4.964c.238-.212-.052-.33-.37-.118L7.68 13.32l-2.9-.908c-.63-.196-.642-.63.132-.934l11.33-4.37c.527-.19.99.128.862.862v-.61z"/></svg>
+    Telegram Botu
+  </a>
+  <button class="tg-float-close" onclick="document.getElementById('tgFloat').style.display='none'">✕</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const B = "https://deprem-backend-kvmk.onrender.com";
+const B  = "https://deprem-backend-kvmk.onrender.com";
+const TG = "https://t.me/depremtakipbot";
 const RM = 60000;
 
-// ── STATE ────────────────────────────────────────────────────────────────────
-const D       = { k: [], a: [] };
-const PS      = { k: {}, a: {} };
-const NI      = { k: new Set(), a: new Set() };
-const UI      = { k: new Set(), a: new Set() };
-const OI      = { k: null, a: null };
-const MM      = { k: 0, a: 0 };
-const REGION  = { k: "", a: "" };
-const MAPS    = { k: null, a: null };
-const MARKERS = { k: [], a: [] };
+const D={k:[],a:[],e:[]}, PS={k:{},a:{},e:{}}, NI={k:new Set(),a:new Set(),e:new Set()}, UI={k:new Set(),a:new Set(),e:new Set()};
+const OI={k:null,a:null,e:null}, MM={k:0,a:0,e:0}, REGION={k:"",a:"",e:""};
+const MAPS={k:null,a:null,e:null}, MARKERS={k:[],a:[],e:[]};
+let curSrc=0, cd=RM/1000, timer, cdTimer;
+let aiLastRun=0, aiAnalyzing=false;
+const AI_COOLDOWN=5*60*1000;
+const ALERT_MAG=4.0, NEW_WINDOW=5*3600*1000;
 
-let curSrc = 0;
-let cd = RM / 1000;
-let timer, cdTimer;
-
-const ALERT_MAG  = 4.0;
-const NEW_WINDOW = 5 * 3600 * 1000;
-
-const REGIONS = {
-  marmara:   { minLat:40.0, maxLat:42.0, minLon:26.0, maxLon:31.5 },
-  ege:       { minLat:36.5, maxLat:40.0, minLon:26.0, maxLon:30.0 },
-  akdeniz:   { minLat:36.0, maxLat:38.5, minLon:28.5, maxLon:36.5 },
-  karadeniz: { minLat:40.5, maxLat:42.0, minLon:31.5, maxLon:40.0 },
-  ic:        { minLat:38.0, maxLat:40.5, minLon:30.0, maxLon:36.0 },
-  dogu:      { minLat:38.0, maxLat:40.5, minLon:36.0, maxLon:44.0 },
-  guneydogu: { minLat:36.5, maxLat:38.5, minLon:36.5, maxLon:44.0 },
+const REGIONS={
+  marmara:{minLat:40.0,maxLat:42.0,minLon:26.0,maxLon:31.5},
+  ege:{minLat:36.5,maxLat:40.0,minLon:26.0,maxLon:30.0},
+  akdeniz:{minLat:36.0,maxLat:38.5,minLon:28.5,maxLon:36.5},
+  karadeniz:{minLat:40.5,maxLat:42.0,minLon:31.5,maxLon:40.0},
+  ic:{minLat:38.0,maxLat:40.5,minLon:30.0,maxLon:36.0},
+  dogu:{minLat:38.0,maxLat:40.5,minLon:36.0,maxLon:44.0},
+  guneydogu:{minLat:36.5,maxLat:38.5,minLon:36.5,maxLon:44.0},
 };
 
-// ── YARDIMCI ─────────────────────────────────────────────────────────────────
-const MC = m =>
-  m >= 5 ? { cls:"m5", tx:"#f87171", dot:"#ef4444", rc:"#ef4444", rp:Math.min(99,m/8*100)+"%" } :
-  m >= 4 ? { cls:"m4", tx:"#fb923c", dot:"#f97316", rc:"#f97316", rp:Math.min(99,m/8*100)+"%" } :
-  m >= 3 ? { cls:"m3", tx:"#fde047", dot:"#eab308", rc:"#eab308", rp:Math.min(99,m/8*100)+"%" } :
-  m >= 2 ? { cls:"m2", tx:"#d8b4fe", dot:"#a855f7", rc:"#a855f7", rp:Math.min(99,m/8*100)+"%" } :
-           { cls:"m1", tx:"#86efac", dot:"#22c55e", rc:"#22c55e", rp:Math.min(99,m/8*100)+"%" };
+const MC=m=>m>=5?{cls:"m5",tx:"#f87171",dot:"#ef4444",rc:"#ef4444",rp:Math.min(99,m/8*100)+"%"}:m>=4?{cls:"m4",tx:"#fb923c",dot:"#f97316",rc:"#f97316",rp:Math.min(99,m/8*100)+"%"}:m>=3?{cls:"m3",tx:"#fde047",dot:"#eab308",rc:"#eab308",rp:Math.min(99,m/8*100)+"%"}:m>=2?{cls:"m2",tx:"#d8b4fe",dot:"#a855f7",rc:"#a855f7",rp:Math.min(99,m/8*100)+"%"}:{cls:"m1",tx:"#86efac",dot:"#22c55e",rc:"#22c55e",rp:Math.min(99,m/8*100)+"%"};
+const fd=t=>new Date(t).toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+const ag=t=>{const s=Math.floor((Date.now()-new Date(t))/1000);return s<60?s+"sn":s<3600?Math.floor(s/60)+"dk":s<86400?Math.floor(s/3600)+"sa":Math.floor(s/86400)+"g";};
+const inR=(q,key)=>{if(!key)return true;const r=REGIONS[key];return q.lat>=r.minLat&&q.lat<=r.maxLat&&q.lon>=r.minLon&&q.lon<=r.maxLon;};
 
-const fd = t => new Date(t).toLocaleString("tr-TR", {
-  day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit"
-});
-const ag = t => {
-  const s = Math.floor((Date.now() - new Date(t)) / 1000);
-  return s < 60 ? s+"sn" : s < 3600 ? Math.floor(s/60)+"dk" : s < 86400 ? Math.floor(s/3600)+"sa" : Math.floor(s/86400)+"g";
-};
-const inR = (q, key) => {
-  if (!key) return true;
-  const r = REGIONS[key];
-  return q.lat >= r.minLat && q.lat <= r.maxLat && q.lon >= r.minLon && q.lon <= r.maxLon;
-};
-
-function setLive(on) {
-  document.getElementById("dot").className = on ? "pulse" : "pulse off";
-  document.getElementById("ltxt").textContent = on ? "Canlı" : "Güncelleniyor";
-}
-
+function setLive(on){document.getElementById("dot").className=on?"pulse":"pulse off";document.getElementById("ltxt").textContent=on?"Canlı":"Güncelleniyor";}
 function beep(f,d,v){try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;g.gain.value=v;o.start();g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.stop(c.currentTime+d);}catch(e){}}
 function alertSound(){beep(880,.15,.4);setTimeout(()=>beep(660,.15,.4),180);setTimeout(()=>beep(440,.3,.4),360);}
 function showToast(msg){const t=document.getElementById("toast");t.innerHTML=msg;t.style.display="block";setTimeout(()=>t.style.display="none",6000);}
-function setDot(src, state){document.getElementById(src==="k"?"sdot0":"sdot1").className="src-dot "+state;}
+function setDot(src,state){
+  const map={k:"sdot0",a:"sdot1",e:"sdot2"};
+  if(map[src])document.getElementById(map[src]).className="src-dot "+state;
+}
+
+async function loadEmsc(){
+  setDot("e","loading");document.getElementById("eerr").style.display="none";
+  try{
+    const r=await fetch(B+"/emsc");if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();if(j.error)throw new Error(j.error);if(!j.quakes||!j.quakes.length)throw new Error("Veri boş");
+    processData("e",j.quakes);setDot("e","ok");
+  }catch(e){document.getElementById("eerrmsg").textContent="⚠️ "+e.message;document.getElementById("eerr").style.display="flex";setDot("e","error");}
+}
+
+// ── GEMİNİ AI ────────────────────────────────────────────────────────────────
+function buildPrompt(Q, reason) {
+  const now=Date.now();
+  const h1=Q.filter(q=>(now-new Date(q.time))<3600000);
+  const h6=Q.filter(q=>(now-new Date(q.time))<21600000);
+  const h24=Q.filter(q=>(now-new Date(q.time))<86400000);
+  const top=[...h24].sort((a,b)=>b.mag-a.mag).slice(0,15);
+  const liste=top.map(q=>`- M${q.mag} ${q.magType}, ${q.place}, ${q.depth}km, ${ag(q.time)} önce`).join("\n");
+  return `Sen bir deprem uzmanısın. Aşağıdaki Türkiye deprem verisini analiz et.\n\nTETİKLEME: ${reason}\n\nVERİ:\n- Son 1 saat: ${h1.length} deprem (M≥3: ${h1.filter(q=>q.mag>=3).length})\n- Son 6 saat: ${h6.length} deprem (M≥4: ${h6.filter(q=>q.mag>=4).length})\n- Son 24 saat: ${h24.length} deprem\n\nÖNE ÇIKANLAR:\n${liste}\n\nKısa ve net yorum yap (max 4 cümle). Kümelenme, artçı veya dikkat çekici durum varsa belirt. Türkçe.`;
+}
+
+function setAIState(state, text) {
+  const badge=document.getElementById("aiBadge"), body=document.getElementById("aiBody");
+  const btn=document.getElementById("aiBtn"), time=document.getElementById("aiTime");
+  if(state==="analyzing"){badge.textContent="Analiz ediliyor…";badge.className="ai-badge analyzing";body.className="ai-body";body.innerHTML='<span style="color:#818cf8">🤖 Gemini deprem verisini inceliyor…</span>';btn.disabled=true;}
+  else if(state==="done"){badge.textContent="Güncellendi";badge.className="ai-badge";body.className="ai-body";body.innerHTML=text;btn.disabled=false;time.textContent="Son: "+new Date().toLocaleTimeString("tr-TR");}
+  else if(state==="error"){badge.textContent="Hata";badge.className="ai-badge";body.className="ai-body empty";body.innerHTML=text;btn.disabled=false;}
+  else{badge.textContent="Hazır";badge.className="ai-badge";btn.disabled=false;}
+}
+
+async function runAI(reason, force) {
+  const now=Date.now();
+  if(!force&&(aiAnalyzing||(now-aiLastRun)<AI_COOLDOWN)) return;
+  const Q=D.k.length?D.k:D.a; if(!Q.length) return;
+  aiAnalyzing=true; aiLastRun=now;
+  setAIState("analyzing");
+  try {
+    const r=await fetch(B+"/gemini_web",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:buildPrompt(Q,reason)})});
+    const j=await r.json();
+    if(j.response){
+      const fmt=j.response.replace(/\*\*(.*?)\*\*/g,"<b>$1</b>").replace(/\*(.*?)\*/g,"<b>$1</b>").replace(/\n/g,"<br>");
+      setAIState("done",fmt);
+      document.getElementById("aiActivityBody").innerHTML=fmt;
+    } else { setAIState("error","⚠️ Yanıt alınamadı."); }
+  } catch(e) { setAIState("error","⚠️ Backend bağlantısı kurulamadı."); }
+  aiAnalyzing=false;
+}
+
+function triggerAI(){runAI("Manuel tetikleme",true);}
+
+// ── KÜME TESPİTİ ─────────────────────────────────────────────────────────────
+function detectClusters(Q) {
+  const now=Date.now(), byPlace={};
+  Q.filter(q=>(now-new Date(q.time))<3600000&&q.mag<3.5).forEach(q=>{
+    const key=q.place.split("(").pop().replace(")","").trim();
+    byPlace[key]=(byPlace[key]||[]);byPlace[key].push(q);
+  });
+  let maxPlace=null,maxCount=0;
+  for(const[p,qs] of Object.entries(byPlace)){if(qs.length>=5&&qs.length>maxCount){maxPlace=p;maxCount=qs.length;}}
+  const banner=document.getElementById("clusterBanner");
+  if(maxPlace){
+    document.getElementById("clusterText").innerHTML=`<b>Küme Uyarısı:</b> ${maxPlace} bölgesinde son 1 saatte <b>${maxCount} küçük deprem</b> tespit edildi.`;
+    banner.style.display="flex";
+    runAI(`Küme: ${maxPlace} bölgesinde 1 saatte ${maxCount} deprem`,false);
+  } else { banner.style.display="none"; }
+}
 
 // ── VERİ ÇEKME ───────────────────────────────────────────────────────────────
-async function loadKandilli() {
-  setLive(false);
-  setDot("k", "loading");
-  document.getElementById("kerr").style.display = "none";
-  try {
-    const r = await fetch(B + "/kandilli");
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const j = await r.json();
-    processData("k", j.quakes || []);
-    setDot("k", "ok");
-  } catch(e) {
-    document.getElementById("kerrmsg").textContent = "⚠️ " + e.message;
-    document.getElementById("kerr").style.display = "flex";
-    setDot("k", "error");
-  }
-  setLive(true);
-  document.getElementById("lf").textContent = "Son: " + fd(new Date());
+async function loadKandilli(){
+  setLive(false);setDot("k","loading");
+  document.getElementById("kerr").style.display="none";
+  try{
+    const r=await fetch(B+"/kandilli");if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();processData("k",j.quakes||[]);setDot("k","ok");
+  }catch(e){document.getElementById("kerrmsg").textContent="⚠️ "+e.message;document.getElementById("kerr").style.display="flex";setDot("k","error");}
+  setLive(true);document.getElementById("lf").textContent="Son: "+fd(new Date());
 }
 
-async function loadAfad() {
-  setDot("a", "loading");
-  document.getElementById("aerr").style.display = "none";
-  try {
-    const r = await fetch(B + "/afad");
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const j = await r.json();
-    if (j.error) throw new Error(j.error);
-    if (!j.quakes || j.quakes.length === 0) throw new Error("Veri boş geldi");
-    processData("a", j.quakes);
-    setDot("a", "ok");
-  } catch(e) {
-    document.getElementById("aerrmsg").textContent = "⚠️ " + e.message;
-    document.getElementById("aerr").style.display = "flex";
-    setDot("a", "error");
-  }
+async function loadAfad(){
+  setDot("a","loading");document.getElementById("aerr").style.display="none";
+  try{
+    const r=await fetch(B+"/afad");if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();if(j.error)throw new Error(j.error);if(!j.quakes||!j.quakes.length)throw new Error("Veri boş");
+    processData("a",j.quakes);setDot("a","ok");
+  }catch(e){document.getElementById("aerrmsg").textContent="⚠️ "+e.message;document.getElementById("aerr").style.display="flex";setDot("a","error");}
 }
 
-function processData(src, quakes) {
-  const isFirst = Object.keys(PS[src]).length === 0;
-  const nx = {};
-  NI[src] = new Set();
-  UI[src] = new Set();
-  let bigNew = null;
-
-  for (const q of quakes) {
-    const fp = q.mag + "|" + q.depth + "|" + q.place;
-    nx[q.id] = fp;
-    const prev = PS[src][q.id];
-    if (prev === undefined) {
-      NI[src].add(q.id);
-      if (!isFirst && q.mag >= ALERT_MAG && (Date.now() - new Date(q.time)) < 5 * 60 * 1000) {
-        bigNew = q;
-      }
-    } else if (prev !== fp) {
-      UI[src].add(q.id);
-    }
+function processData(src,quakes){
+  const isFirst=Object.keys(PS[src]).length===0;
+  const nx={};NI[src]=new Set();UI[src]=new Set();let bigNew=null;
+  for(const q of quakes){
+    const fp=q.mag+"|"+q.depth+"|"+q.place;nx[q.id]=fp;
+    const prev=PS[src][q.id];
+    if(prev===undefined){NI[src].add(q.id);if(!isFirst&&q.mag>=ALERT_MAG&&(Date.now()-new Date(q.time))<5*60*1000)bigNew=q;}
+    else if(prev!==fp){UI[src].add(q.id);}
   }
-
-  PS[src] = nx;
-  D[src]  = quakes;
-
-  renderList(src);
-  renderStats(src);
-  if (MAPS[src]) renderMapMarkers(src);
+  PS[src]=nx;D[src]=quakes;
+  renderList(src);renderStats(src);
+  if(MAPS[src])renderMapMarkers(src);
   renderActivity();
-
-  if (curSrc === 0 && src === "k") updateTopStats("k");
-  if (curSrc === 1 && src === "a") updateTopStats("a");
-
-  if (bigNew) {
-    alertSound();
-    showToast("🚨 M" + bigNew.mag.toFixed(1) + " — " + bigNew.place);
-  }
-
-  setTimeout(() => { NI[src] = new Set(); UI[src] = new Set(); renderList(src); }, 10000);
+  if((curSrc===0&&src==="k")||(curSrc===1&&src==="a"))updateTopStats(src);
+  if(bigNew){alertSound();showToast("🚨 M"+bigNew.mag.toFixed(1)+" — "+bigNew.place+"<br><small>Detay için Telegram botuna git</small>");runAI("Yeni büyük deprem: M"+bigNew.mag+" - "+bigNew.place,false);}
+  detectClusters(D.k.length?D.k:D.a);
+  if(isFirst&&quakes.length>0){document.getElementById("aiBtn").disabled=false;setTimeout(()=>runAI("İlk veri yüklemesi",false),2000);}
+  setTimeout(()=>{NI[src]=new Set();UI[src]=new Set();renderList(src);},10000);
 }
 
-// ── STAT BAR ─────────────────────────────────────────────────────────────────
-function updateTopStats(src) {
-  const Q = D[src];
-  if (!Q.length) return;
-  const td = new Date().toISOString().slice(0, 10);
-  document.getElementById("st").textContent = Q.length;
-  document.getElementById("sd").textContent = Q.filter(q => q.time.startsWith(td)).length;
-  document.getElementById("sm").textContent = "M" + Math.max(...Q.map(q => q.mag)).toFixed(1);
-  document.getElementById("s4").textContent = Q.filter(q => q.mag >= 4).length;
-  document.getElementById("stlbl").textContent = src === "k" ? "Kandilli" : "AFAD";
+function updateTopStats(src){
+  const Q=D[src];if(!Q.length)return;
+  const td=new Date().toISOString().slice(0,10);
+  document.getElementById("st").textContent=Q.length;
+  document.getElementById("sd").textContent=Q.filter(q=>q.time.startsWith(td)).length;
+  document.getElementById("sm").textContent="M"+Math.max(...Q.map(q=>q.mag)).toFixed(1);
+  document.getElementById("s4").textContent=Q.filter(q=>q.mag>=4).length;
+  document.getElementById("stlbl").textContent=src==="k"?"Kandilli":"AFAD";
 }
 
-// ── LİSTE ────────────────────────────────────────────────────────────────────
-function renderList(src) {
-  const pfx = src === "k" ? "k" : "a";
-  const f = D[src].filter(q => q.mag >= MM[src] && inR(q, REGION[src]));
-  document.getElementById(pfx + "cnt").textContent = f.length + " kayıt";
-  const lb = document.getElementById(pfx + "lb");
-  const ls = document.getElementById(pfx + "list");
-  if (!D[src].length) { lb.style.display = "block"; ls.style.display = "none"; return; }
-  lb.style.display = "none";
-  ls.style.display = "flex";
-  const now = Date.now();
-  ls.innerHTML = f.map(q => {
-    const c   = MC(q.mag);
-    const isN = NI[src].has(q.id) && (now - new Date(q.time)) < NEW_WINDOW;
-    const isU = UI[src].has(q.id);
-    const isO = OI[src] === q.id;
-    const safeId = q.id.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
-    return `<div class="card ${c.cls}${isN?" new-q":isU?" upd-q":""}" onclick="toggleCard('${src}','${safeId}')">
-      ${isN ? '<span class="tag tnew">YENİ</span>' : ""}
-      ${isU ? '<span class="tag tupd">GÜNCELLENDİ</span>' : ""}
+function renderList(src){
+  const pfx=src==="k"?"k":src==="a"?"a":"e";
+  const f=D[src].filter(q=>q.mag>=MM[src]&&inR(q,REGION[src]));
+  document.getElementById(pfx+"cnt").textContent=f.length+" kayıt";
+  const lb=document.getElementById(pfx+"lb"),ls=document.getElementById(pfx+"list");
+  if(!D[src].length){lb.style.display="block";ls.style.display="none";return;}
+  lb.style.display="none";ls.style.display="flex";
+  const now=Date.now();
+  ls.innerHTML=f.map(q=>{
+    const c=MC(q.mag),isN=NI[src].has(q.id)&&(now-new Date(q.time))<NEW_WINDOW,isU=UI[src].has(q.id),isO=OI[src]===q.id;
+    const sid=q.id.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+    return`<div class="card ${c.cls}${isN?" new-q":isU?" upd-q":""}" onclick="toggleCard('${src}','${sid}')">
+      ${isN?'<span class="tag tnew">YENİ</span>':""}${isU?'<span class="tag tupd">GÜNCELLENDİ</span>':""}
       <div class="ci">
         <div class="mag-ring" style="--rc:${c.rc};--rp:${c.rp}">
           <span class="mag-num" style="color:${c.tx}">M${q.mag.toFixed(1)}</span>
@@ -464,191 +596,101 @@ function renderList(src) {
         </div>
         <div class="cdot" style="background:${c.dot}"></div>
       </div>
-      ${isO ? `<div class="cdetail">
-        <span>🕳️ Derinlik <b>${q.depth} km</b></span>
-        <span>📏 Tür <b>${q.magType}</b></span>
-        <span>🌐 Enlem <b>${q.lat}</b></span>
-        <span>🌐 Boylam <b>${q.lon}</b></span>
-      </div>` : ""}
+      ${isO?`<div class="cdetail"><span>🕳️ Derinlik <b>${q.depth} km</b></span><span>📏 Tür <b>${q.magType}</b></span><span>🌐 Enlem <b>${q.lat}</b></span><span>🌐 Boylam <b>${q.lon}</b></span></div>`:""}
     </div>`;
   }).join("");
 }
 
-function toggleCard(src, id) { OI[src] = OI[src] === id ? null : id; renderList(src); }
+function toggleCard(src,id){OI[src]=OI[src]===id?null:id;renderList(src);}
+function setMag(src,v,btn){MM[src]=v;btn.closest(".filter-bar").querySelectorAll(".fb").forEach(b=>b.classList.remove("on"));btn.classList.add("on");renderList(src);}
+function setRegion(src,val,btn){REGION[src]=val;const pfx=src==="k"?"k":src==="a"?"a":"e";document.getElementById(pfx+"regionbtns").querySelectorAll(".rb").forEach(b=>b.classList.remove("on"));btn.classList.add("on");renderList(src);}
 
-function setMag(src, v, btn) {
-  MM[src] = v;
-  btn.closest(".filter-bar").querySelectorAll(".fb").forEach(b => b.classList.remove("on"));
-  btn.classList.add("on");
-  renderList(src);
-}
-
-function setRegion(src, val, btn) {
-  REGION[src] = val;
-  const pfx = src === "k" ? "k" : "a";
-  document.getElementById(pfx + "regionbtns").querySelectorAll(".rb").forEach(b => b.classList.remove("on"));
-  btn.classList.add("on");
-  renderList(src);
-}
-
-// ── HARİTA ───────────────────────────────────────────────────────────────────
-function initMap(src) {
-  const id = src === "k" ? "kmap" : "amap";
-  if (MAPS[src]) { setTimeout(() => MAPS[src].invalidateSize(), 100); return; }
-  MAPS[src] = L.map(id, { center:[39, 35], zoom:6 });
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution:"© OSM", maxZoom:18 }).addTo(MAPS[src]);
+function initMap(src){
+  const id=src==="k"?"kmap":"amap";
+  if(MAPS[src]){setTimeout(()=>MAPS[src].invalidateSize(),100);return;}
+  MAPS[src]=L.map(id,{center:[39,35],zoom:6});
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OSM",maxZoom:18}).addTo(MAPS[src]);
   renderMapMarkers(src);
 }
-
-function renderMapMarkers(src) {
-  if (!MAPS[src] || !D[src].length) return;
-  MARKERS[src].forEach(m => m.remove());
-  MARKERS[src] = [];
-  D[src].forEach(q => {
-    const c = MC(q.mag);
-    const r = Math.max(5, Math.min(22, q.mag * 3.5));
-    const icon = L.divIcon({
-      className: "",
-      html: `<div style="width:${r*2}px;height:${r*2}px;border-radius:50%;background:${c.dot};opacity:.85;border:2px solid rgba(255,255,255,.5);box-shadow:0 0 ${r}px ${c.dot}88"></div>`,
-      iconSize: [r*2, r*2], iconAnchor: [r, r]
-    });
-    const mk = L.marker([q.lat, q.lon], { icon }).addTo(MAPS[src]);
+function renderMapMarkers(src){
+  if(!MAPS[src]||!D[src].length)return;
+  MARKERS[src].forEach(m=>m.remove());MARKERS[src]=[];
+  D[src].forEach(q=>{
+    const c=MC(q.mag),r=Math.max(5,Math.min(22,q.mag*3.5));
+    const icon=L.divIcon({className:"",html:`<div style="width:${r*2}px;height:${r*2}px;border-radius:50%;background:${c.dot};opacity:.85;border:2px solid rgba(255,255,255,.5);box-shadow:0 0 ${r}px ${c.dot}88"></div>`,iconSize:[r*2,r*2],iconAnchor:[r,r]});
+    const mk=L.marker([q.lat,q.lon],{icon}).addTo(MAPS[src]);
     mk.bindPopup(`<b>M${q.mag.toFixed(1)}</b><br/>${q.place}<br/><small>${fd(q.time)}</small>`);
     MARKERS[src].push(mk);
   });
 }
 
-// ── İSTATİSTİK ───────────────────────────────────────────────────────────────
-function renderStats(src) {
-  const pfx = src === "k" ? "k" : "a";
-  const Q = D[src];
-  if (!Q.length) return;
-  const tot = Q.length;
-  const td  = new Date().toISOString().slice(0, 10);
-  document.getElementById(pfx + "stats").innerHTML = [
-    { i:"📊", v:tot,                                              l:"Toplam" },
-    { i:"📅", v:Q.filter(q=>q.time.startsWith(td)).length,        l:"Bugün" },
-    { i:"💥", v:"M"+Math.max(...Q.map(q=>q.mag)).toFixed(1),      l:"En Büyük" },
-    { i:"📈", v:"M"+(Q.reduce((s,q)=>s+q.mag,0)/tot).toFixed(1), l:"Ortalama" },
-    { i:"🔵", v:Q.filter(q=>q.mag>=3).length,                     l:"M≥3" },
-    { i:"⚠️", v:Q.filter(q=>q.mag>=4).length,                     l:"M≥4" },
-  ].map(s => `<div class="sc"><div class="sc-icon">${s.i}</div><div class="sc-val">${s.v}</div><div class="sc-lbl">${s.l}</div></div>`).join("");
-
-  const bs = [
-    { l:"M 5+",  c:Q.filter(q=>q.mag>=5).length,              col:"#ef4444" },
-    { l:"M 4–5", c:Q.filter(q=>q.mag>=4&&q.mag<5).length,     col:"#f97316" },
-    { l:"M 3–4", c:Q.filter(q=>q.mag>=3&&q.mag<4).length,     col:"#eab308" },
-    { l:"M 2–3", c:Q.filter(q=>q.mag>=2&&q.mag<3).length,     col:"#a855f7" },
-    { l:"M 1–2", c:Q.filter(q=>q.mag>=1&&q.mag<2).length,     col:"#22c55e" },
-    { l:"M < 1", c:Q.filter(q=>q.mag<1).length,               col:"#64748b" },
-  ];
-  document.getElementById(pfx + "chart").innerHTML =
-    `<div class="ctitle">Büyüklük Dağılımı</div>` +
-    bs.map(b => {
-      const pct = Math.round(b.c / tot * 100);
-      return `<div class="brow"><div class="bmeta"><span>${b.l}</span><span>${b.c} (%${pct})</span></div><div class="btrack"><div class="bfill" style="width:${pct}%;background:${b.col}"></div></div></div>`;
-    }).join("");
+function renderStats(src){
+  const pfx=src==="k"?"k":src==="a"?"a":"e",Q=D[src];if(!Q.length)return;
+  const tot=Q.length,td=new Date().toISOString().slice(0,10);
+  document.getElementById(pfx+"stats").innerHTML=[
+    {i:"📊",v:tot,l:"Toplam"},{i:"📅",v:Q.filter(q=>q.time.startsWith(td)).length,l:"Bugün"},
+    {i:"💥",v:"M"+Math.max(...Q.map(q=>q.mag)).toFixed(1),l:"En Büyük"},
+    {i:"📈",v:"M"+(Q.reduce((s,q)=>s+q.mag,0)/tot).toFixed(1),l:"Ortalama"},
+    {i:"🔵",v:Q.filter(q=>q.mag>=3).length,l:"M≥3"},{i:"⚠️",v:Q.filter(q=>q.mag>=4).length,l:"M≥4"},
+  ].map(s=>`<div class="sc"><div class="sc-icon">${s.i}</div><div class="sc-val">${s.v}</div><div class="sc-lbl">${s.l}</div></div>`).join("");
+  const bs=[{l:"M 5+",c:Q.filter(q=>q.mag>=5).length,col:"#ef4444"},{l:"M 4–5",c:Q.filter(q=>q.mag>=4&&q.mag<5).length,col:"#f97316"},{l:"M 3–4",c:Q.filter(q=>q.mag>=3&&q.mag<4).length,col:"#eab308"},{l:"M 2–3",c:Q.filter(q=>q.mag>=2&&q.mag<3).length,col:"#a855f7"},{l:"M 1–2",c:Q.filter(q=>q.mag>=1&&q.mag<2).length,col:"#22c55e"},{l:"M < 1",c:Q.filter(q=>q.mag<1).length,col:"#64748b"}];
+  document.getElementById(pfx+"chart").innerHTML=`<div class="ctitle">Büyüklük Dağılımı</div>`+bs.map(b=>{const pct=Math.round(b.c/tot*100);return`<div class="brow"><div class="bmeta"><span>${b.l}</span><span>${b.c} (%${pct})</span></div><div class="btrack"><div class="bfill" style="width:${pct}%;background:${b.col}"></div></div></div>`;}).join("");
 }
 
-// ── AKTİVİTE ─────────────────────────────────────────────────────────────────
-function renderActivity() {
-  const Q = D.k.length ? D.k : D.a;
-  if (!Q.length) return;
-  const now     = Date.now();
-  const c24     = now - 24 * 3600 * 1000;
-  const last24  = Q.filter(q => new Date(q.time) >= c24);
-  const last1h  = Q.filter(q => (now - new Date(q.time)) < 3600 * 1000);
-  const last6h  = Q.filter(q => (now - new Date(q.time)) < 6 * 3600 * 1000);
-
-  let score = 0;
-  score += Math.min(40, last1h.length * 4);
-  score += Math.min(30, last1h.filter(q => q.mag >= 3).length * 10);
-  score += Math.min(20, last6h.filter(q => q.mag >= 4).length * 10);
-  score += last24.filter(q => q.mag >= 5).length >= 1 ? 10 : 0;
-  score = Math.min(100, score);
-
-  let txt, col, desc;
-  if      (score < 20) { txt="🟢 Düşük";      col="linear-gradient(90deg,#22c55e,#16a34a)"; desc="Deprem aktivitesi normalin altında."; }
-  else if (score < 45) { txt="🟡 Normal";      col="linear-gradient(90deg,#eab308,#ca8a04)"; desc="Deprem aktivitesi normal seviyelerde."; }
-  else if (score < 70) { txt="🟠 Yüksek";      col="linear-gradient(90deg,#f97316,#ea580c)"; desc="Son saatlerde belirgin deprem aktivitesi var."; }
-  else                 { txt="🔴 Çok Yüksek";  col="linear-gradient(90deg,#ef4444,#dc2626)"; desc="Dikkat! Yoğun deprem aktivitesi."; }
-
-  document.getElementById("riskLabel").textContent = txt;
-  document.getElementById("riskDesc").textContent  = desc;
-  document.getElementById("riskBar").style.cssText =
-    `height:100%;border-radius:20px;transition:width .8s ease;width:${score}%;background:${col}`;
-
-  document.getElementById("riskMini").innerHTML = [
-    { i:"⚡", v:last1h.length,  l:"Son 1 Saat" },
-    { i:"🕕", v:last6h.length,  l:"Son 6 Saat" },
-    { i:"📅", v:last24.length,  l:"Son 24 Saat" },
-  ].map(s => `<div class="risk-mini"><div style="font-size:18px">${s.i}</div><div style="font-size:20px;font-weight:800;color:#f1f5f9">${s.v}</div><div style="font-size:10px;color:#475569">${s.l}</div></div>`).join("");
-
-  const hours = Array(24).fill(0);
-  last24.forEach(q => { hours[new Date(q.time).getHours()]++; });
-  const maxH = Math.max(...hours, 1);
-  const nowH = new Date().getHours();
-
-  document.getElementById("timeline").innerHTML = hours.map((c, i) => {
-    const pct  = Math.round(c / maxH * 100);
-    const col2 = c === 0 ? "rgba(255,255,255,.05)" : c >= 10 ? "#ef4444" : c >= 5 ? "#f97316" : c >= 2 ? "#eab308" : "#22c55e";
-    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px" title="${i}:00 — ${c} deprem">
-      <div style="font-size:9px;color:#475569;font-weight:700">${c || ""}</div>
-      <div style="width:100%;background:${col2};border-radius:3px 3px 0 0;height:${Math.max(2, pct * .7)}px;${i === nowH ? "box-shadow:0 0 6px "+col2 : ""}"></div>
-    </div>`;
-  }).join("");
-
-  document.getElementById("tlabels").innerHTML = hours.map((_, i) =>
-    `<span style="${i === nowH ? "color:#6366f1;font-weight:700" : ""}">${i.toString().padStart(2,"0")}</span>`
-  ).join("");
-
-  const peak = hours.indexOf(Math.max(...hours));
-  document.getElementById("tlinfo").textContent =
-    `En yoğun: ${peak}:00 (${hours[peak]} deprem) · Şu an: ${last1h.length}/saat`;
+function renderActivity(){
+  const Q=D.k.length?D.k:D.a;if(!Q.length)return;
+  const now=Date.now(),c24=now-86400000;
+  const last24=Q.filter(q=>new Date(q.time)>=c24);
+  const last1h=Q.filter(q=>(now-new Date(q.time))<3600000);
+  const last6h=Q.filter(q=>(now-new Date(q.time))<21600000);
+  let score=0;
+  score+=Math.min(40,last1h.length*4);score+=Math.min(30,last1h.filter(q=>q.mag>=3).length*10);
+  score+=Math.min(20,last6h.filter(q=>q.mag>=4).length*10);score+=last24.filter(q=>q.mag>=5).length>=1?10:0;
+  score=Math.min(100,score);
+  let txt,col,desc;
+  if(score<20){txt="🟢 Düşük";col="linear-gradient(90deg,#22c55e,#16a34a)";desc="Deprem aktivitesi normalin altında.";}
+  else if(score<45){txt="🟡 Normal";col="linear-gradient(90deg,#eab308,#ca8a04)";desc="Deprem aktivitesi normal seviyelerde.";}
+  else if(score<70){txt="🟠 Yüksek";col="linear-gradient(90deg,#f97316,#ea580c)";desc="Son saatlerde belirgin deprem aktivitesi var.";}
+  else{txt="🔴 Çok Yüksek";col="linear-gradient(90deg,#ef4444,#dc2626)";desc="Dikkat! Yoğun deprem aktivitesi.";}
+  document.getElementById("riskLabel").textContent=txt;document.getElementById("riskDesc").textContent=desc;
+  document.getElementById("riskBar").style.cssText=`height:100%;border-radius:20px;transition:width .8s ease;width:${score}%;background:${col}`;
+  document.getElementById("riskMini").innerHTML=[{i:"⚡",v:last1h.length,l:"Son 1 Saat"},{i:"🕕",v:last6h.length,l:"Son 6 Saat"},{i:"📅",v:last24.length,l:"Son 24 Saat"}].map(s=>`<div class="risk-mini"><div style="font-size:18px">${s.i}</div><div style="font-size:20px;font-weight:800;color:#f1f5f9">${s.v}</div><div style="font-size:10px;color:#475569">${s.l}</div></div>`).join("");
+  const hours=Array(24).fill(0);last24.forEach(q=>{hours[new Date(q.time).getHours()]++;});
+  const maxH=Math.max(...hours,1),nowH=new Date().getHours();
+  document.getElementById("timeline").innerHTML=hours.map((c,i)=>{const pct=Math.round(c/maxH*100),col2=c===0?"rgba(255,255,255,.05)":c>=10?"#ef4444":c>=5?"#f97316":c>=2?"#eab308":"#22c55e";return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px" title="${i}:00 — ${c} deprem"><div style="font-size:9px;color:#475569;font-weight:700">${c||""}</div><div style="width:100%;background:${col2};border-radius:3px 3px 0 0;height:${Math.max(2,pct*.7)}px;${i===nowH?"box-shadow:0 0 6px "+col2:""}"></div></div>`;}).join("");
+  document.getElementById("tlabels").innerHTML=hours.map((_,i)=>`<span style="${i===nowH?"color:#6366f1;font-weight:700":""}">${i.toString().padStart(2,"0")}</span>`).join("");
+  const peak=hours.indexOf(Math.max(...hours));document.getElementById("tlinfo").textContent=`En yoğun: ${peak}:00 (${hours[peak]} deprem) · Şu an: ${last1h.length}/saat`;
 }
 
-// ── SEKME YÖNETİMİ ───────────────────────────────────────────────────────────
-function srcTab(i) {
-  curSrc = i;
-  OI.k = null; OI.a = null;
-  document.querySelectorAll(".src-tab").forEach((t, j) => t.classList.toggle("on", i === j));
-  document.querySelectorAll("#src0,#src1,#src2").forEach((t, j) => t.classList.toggle("on", i === j));
-  if (i === 0) { if (D.k.length) { updateTopStats("k"); renderList("k"); } }
-  if (i === 1) { if (!D.a.length) loadAfad(); else { updateTopStats("a"); renderList("a"); } }
+function srcTab(i){
+  curSrc=i;OI.k=null;OI.a=null;OI.e=null;
+  document.querySelectorAll(".src-tab").forEach((t,j)=>t.classList.toggle("on",i===j));
+  document.querySelectorAll("#src0,#src1,#src2,#src3").forEach((t,j)=>t.classList.toggle("on",i===j));
+  if(i===0&&D.k.length){updateTopStats("k");renderList("k");}
+  if(i===1){if(!D.a.length)loadAfad();else{updateTopStats("a");renderList("a");}}
+  if(i===2){if(!D.e.length)loadEmsc();else{updateTopStats("e");renderList("e");}}
+  if(i===3){runAI("Aktivite sekmesi açıldı",false);}
+}
+function subTab(src,i,btn){
+  btn.closest(".sub-tabs").querySelectorAll(".sub-tab").forEach(t=>t.classList.remove("on"));btn.classList.add("on");
+  const pfx=src==="k"?"k":src==="a"?"a":"e";
+  const subs=[pfx+"sub0",pfx+"sub1",pfx+"sub2"];
+  subs.forEach((id,j)=>document.getElementById(id).classList.toggle("on",i===j));
+  if(i===1)setTimeout(()=>initMap(src),100);
 }
 
-function subTab(src, i, btn) {
-  btn.closest(".sub-tabs").querySelectorAll(".sub-tab").forEach(t => t.classList.remove("on"));
-  btn.classList.add("on");
-  const pfx  = src === "k" ? "k" : "a";
-  const subs = [pfx+"sub0", pfx+"sub1", pfx+"sub2"];
-  subs.forEach((id, j) => document.getElementById(id).classList.toggle("on", i === j));
-  if (i === 1) setTimeout(() => initMap(src), 100);
-}
-
-// ── YENILE / ZAMANLAYICI ─────────────────────────────────────────────────────
-function refreshAll() {
-  cd = RM / 1000;
-  clearInterval(timer);
-  timer = setInterval(tick, RM);
-  tick();
-}
-
-function tick() {
+function refreshAll(){cd=RM/1000;clearInterval(timer);timer=setInterval(tick,RM);tick();}
+function tick(){
   loadKandilli();
-  if (D.a.length > 0 || curSrc === 1) loadAfad();
-  cd = RM / 1000;
+  if(D.a.length>0||curSrc===1)loadAfad();
+  if(D.e.length>0||curSrc===2)loadEmsc();
+  cd=RM/1000;
 }
 
-cdTimer = setInterval(() => {
-  cd = Math.max(0, cd - 1);
-  document.getElementById("cd").textContent = cd + "sn";
-}, 1000);
-
-setInterval(() => fetch(B + "/health").catch(() => {}), 14 * 60 * 1000);
-
+cdTimer=setInterval(()=>{cd=Math.max(0,cd-1);document.getElementById("cd").textContent=cd+"sn";},1000);
+setInterval(()=>fetch(B+"/health").catch(()=>{}),14*60*1000);
 loadKandilli();
-timer = setInterval(tick, RM);
+timer=setInterval(tick,RM);
 </script>
 </body>
 </html>
