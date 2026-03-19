@@ -692,7 +692,7 @@ async def deprem_alarmcisi():
 
 # ── FASTAPI ───────────────────────────────────────────────────────────────────
 app = FastAPI()
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET", "POST"], allow_headers=["*"])
 
 @app.on_event("startup")
 async def startup():
@@ -799,6 +799,31 @@ async def fetch_afad():
     return sorted(merged, key=lambda q: q["time"], reverse=True)
 
 # ── ENDPOINTLEr ───────────────────────────────────────────────────────────────
+@app.get("/emsc")
+async def emsc():
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            r = await client.get(EMSC_URL)
+            emsc_data = r.json()
+        quakes = []
+        for f in emsc_data.get("features", []):
+            p = f.get("properties", {})
+            geo = f.get("geometry", {}).get("coordinates", [0, 0, 0])
+            quakes.append({
+                "id":      f.get("id", ""),
+                "time":    p.get("time", "").replace("Z", "").replace(".000", ""),
+                "lat":     geo[1],
+                "lon":     geo[0],
+                "depth":   abs(geo[2]) if len(geo) > 2 else 0,
+                "mag":     p.get("mag", 0),
+                "magType": p.get("magtype", "M"),
+                "place":   p.get("flynn_region", p.get("place", ""))
+            })
+        quakes.sort(key=lambda q: q["time"], reverse=True)
+        return {"count": len(quakes), "source": "EMSC", "quakes": quakes}
+    except Exception as e:
+        return {"count": 0, "source": "EMSC", "quakes": [], "error": str(e)}
+
 @app.get("/kandilli")
 async def kandilli():
     data = await fetch_kandilli()
